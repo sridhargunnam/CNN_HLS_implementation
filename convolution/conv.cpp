@@ -29,5 +29,4 @@ void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
 void conv_layer1(data_t image[227][227][3], data_t convKernels1[11][11][3][96],data_t bias1[96], data_t FMap1[55][55][96])
 {
 
-
 }
