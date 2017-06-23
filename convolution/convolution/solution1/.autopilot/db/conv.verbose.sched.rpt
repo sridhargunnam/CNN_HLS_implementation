@@ -1,0 +1,185 @@
+
+
+================================================================
+== Vivado HLS Report for 'conv'
+================================================================
+* Date:           Fri Jun 23 02:48:47 2017
+
+* Version:        2017.1 (Build 1846317 on Fri Apr 14 19:19:38 MDT 2017)
+* Project:        convolution
+* Solution:       solution1
+* Product family: virtex7
+* Target device:  xc7vx485tffg1761-2
+
+
+================================================================
+== Performance Estimates
+================================================================
++ Timing (ns): 
+    * Summary: 
+    +--------+-------+----------+------------+
+    |  Clock | Target| Estimated| Uncertainty|
+    +--------+-------+----------+------------+
+    |ap_clk  |  10.00|      1.57|        1.25|
+    +--------+-------+----------+------------+
+
++ Latency (clock cycles): 
+    * Summary: 
+    +-----+-----+-----+-----+---------+
+    |  Latency  |  Interval | Pipeline|
+    | min | max | min | max |   Type  |
+    +-----+-----+-----+-----+---------+
+    |  133|  133|  134|  134|   none  |
+    +-----+-----+-----+-----+---------+
+
+    + Detail: 
+        * Instance: 
+        N/A
+
+        * Loop: 
+        +-------------+-----+-----+----------+-----------+-----------+------+----------+
+        |             |  Latency  | Iteration|  Initiation Interval  | Trip |          |
+        |  Loop Name  | min | max |  Latency |  achieved |   target  | Count| Pipelined|
+        +-------------+-----+-----+----------+-----------+-----------+------+----------+
+        |- Loop 1     |  132|  132|        12|          -|          -|    11|    no    |
+        | + Loop 1.1  |   10|   10|         1|          -|          -|    11|    no    |
+        +-------------+-----+-----+----------+-----------+-----------+------+----------+
+
+============================================================
++ Verbose Summary: Synthesis Manager
+============================================================
+InlineROM: 1
+ExposeGlobal: 0
+============================================================
++ Verbose Summary: CDFG Model
+============================================================
+IsTopModel: 1
+ResetActiveHigh: 1
+IsCombinational: 0
+IsDatapathOnly: 0
+HasWiredReturn: 1
+HasMFsm: 0
+HasVarLatency: 1
+IsPipeline: 0
+IsRtlPipelined: 0
+IsInstanceOverlapped: 0
+IsDontTouch: 0
+HasImplIP: 0
+IsGatedGlobalClock: 0
+
+
+============================================================
++ Verbose Summary: Schedule
+============================================================
+* Number of FSM states: 3
+* Pipeline: 0
+* Dataflow Pipeline: 0
+
+* FSM state transitions: 
+1 --> 
+	2  / true
+2 --> 
+	3  / (!exitcond2)
+3 --> 
+	3  / (!exitcond1)
+	2  / (exitcond1)
+* FSM state operations: 
+
+ <State 1>: 0.85ns
+ST_1: StgValue_4 (4)  [1/1] 0.00ns
+:0  call void (...)* @_ssdm_op_SpecBitsMap([121 x i32]* %a) nounwind, !map !7
+
+ST_1: StgValue_5 (5)  [1/1] 0.00ns
+:1  call void (...)* @_ssdm_op_SpecBitsMap([121 x i32]* %b) nounwind, !map !13
+
+ST_1: StgValue_6 (6)  [1/1] 0.00ns
+:2  call void (...)* @_ssdm_op_SpecBitsMap(i32 %c) nounwind, !map !17
+
+ST_1: StgValue_7 (7)  [1/1] 0.00ns
+:3  call void (...)* @_ssdm_op_SpecTopModule([5 x i8]* @conv_str) nounwind
+
+ST_1: StgValue_8 (8)  [1/1] 0.85ns  loc: conv.cpp:7
+:4  br label %.loopexit
+
+
+ <State 2>: 1.57ns
+ST_2: i (10)  [1/1] 0.00ns
+.loopexit:0  %i = phi i4 [ 0, %0 ], [ %i_1, %.loopexit.loopexit ]
+
+ST_2: exitcond2 (11)  [1/1] 1.57ns  loc: conv.cpp:7
+.loopexit:1  %exitcond2 = icmp eq i4 %i, -5
+
+ST_2: empty (12)  [1/1] 0.00ns
+.loopexit:2  %empty = call i32 (...)* @_ssdm_op_SpecLoopTripCount(i64 11, i64 11, i64 11) nounwind
+
+ST_2: i_1 (13)  [1/1] 1.44ns  loc: conv.cpp:7
+.loopexit:3  %i_1 = add i4 %i, 1
+
+ST_2: StgValue_13 (14)  [1/1] 0.00ns  loc: conv.cpp:7
+.loopexit:4  br i1 %exitcond2, label %.preheader.preheader_ifconv, label %.preheader.preheader
+
+ST_2: StgValue_14 (16)  [1/1] 0.85ns  loc: conv.cpp:10
+.preheader.preheader:0  br label %.preheader
+
+ST_2: StgValue_15 (26)  [1/1] 0.00ns  loc: conv.cpp:21
+.preheader.preheader_ifconv:0  ret void
+
+
+ <State 3>: 1.57ns
+ST_3: j (18)  [1/1] 0.00ns
+.preheader:0  %j = phi i4 [ %j_1, %.preheader ], [ 0, %.preheader.preheader ]
+
+ST_3: exitcond1 (19)  [1/1] 1.57ns  loc: conv.cpp:10
+.preheader:1  %exitcond1 = icmp eq i4 %j, -5
+
+ST_3: empty_2 (20)  [1/1] 0.00ns
+.preheader:2  %empty_2 = call i32 (...)* @_ssdm_op_SpecLoopTripCount(i64 11, i64 11, i64 11) nounwind
+
+ST_3: j_1 (21)  [1/1] 1.44ns  loc: conv.cpp:10
+.preheader:3  %j_1 = add i4 %j, 1
+
+ST_3: StgValue_20 (22)  [1/1] 0.00ns  loc: conv.cpp:10
+.preheader:4  br i1 %exitcond1, label %.loopexit.loopexit, label %.preheader
+
+ST_3: StgValue_21 (24)  [1/1] 0.00ns
+.loopexit.loopexit:0  br label %.loopexit
+
+
+
+============================================================
++ Verbose Summary: Timing violations
+============================================================
+Target clock period: 10ns, clock uncertainty: 1.25ns.
+
+ <State 1>: 0.85ns
+The critical path consists of the following:
+	multiplexor before 'phi' operation ('i') with incoming values : ('i', conv.cpp:7) [10]  (0.85 ns)
+
+ <State 2>: 1.57ns
+The critical path consists of the following:
+	'phi' operation ('i') with incoming values : ('i', conv.cpp:7) [10]  (0 ns)
+	'icmp' operation ('exitcond2', conv.cpp:7) [11]  (1.57 ns)
+
+ <State 3>: 1.57ns
+The critical path consists of the following:
+	'phi' operation ('j') with incoming values : ('j', conv.cpp:10) [18]  (0 ns)
+	'icmp' operation ('exitcond1', conv.cpp:10) [19]  (1.57 ns)
+
+
+============================================================
++ Verbose Summary: Binding
+============================================================
+N/A
+* FSMD analyzer results:
+  - Output states:
+ - Input state : 
+  - Chain level:
+	State 1
+	State 2
+	State 3
+
+
+============================================================
++ Verbose Summary: Datapath Resource usage 
+============================================================
+N/A
