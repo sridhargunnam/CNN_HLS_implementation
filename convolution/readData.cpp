@@ -1,4 +1,3 @@
-// Author: Alkrith
 // To read data from .dat format to an array in c++
 //
 #include "stdafx.h"
