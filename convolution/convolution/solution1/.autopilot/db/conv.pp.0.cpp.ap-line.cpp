@@ -204,30 +204,50 @@ extern "C" {
 #pragma line 8 "<command line>" 2
 #pragma line 1 "<built-in>" 2
 #pragma line 1 "conv.cpp" 2
+// matrix dot product and summation
+#pragma empty_line
 #pragma line 1 "./conv.h" 1
-typedef int image[227][227][3] ;
-typedef int FMap1[55][55][96] ; // feature map 1 of conv layer1
-typedef int kernel_1[11][11];
 typedef int data_t;
-void conv(data_t a[11][11], data_t b[11][11], data_t c);
-#pragma line 2 "conv.cpp" 2
-void conv(data_t a[11][11], data_t b[11][11], data_t c)
+#pragma empty_line
+typedef data_t image[227][227][3] ;
+//typedef data_t stride 4;
+typedef data_t FMap1[55][55][96] ; // feature map 1 of conv layer1
+typedef data_t kernel_1[11][11];
+typedef data_t convKernels1[11][11][3][96];
+typedef data_t bias1[96];
+#pragma empty_line
+void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t *c);
+#pragma empty_line
+void conv_layer1(data_t image,data_t convKernels1,data_t bias1, data_t stride);
+#pragma line 3 "conv.cpp" 2
+void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
 {
- int sum=0;
- data_t i,j;
+ data_t sum = 0;
  data_t temp[11];
- for(i=0; i<11; i++)
+ for(int i=0; i<11; i++)
  {
-  temp[i]=0;
-  for(j=0; j<11; j++)
+  //temp[i]=0;
+  for(int j=0; j<11; j++)
   {
-   temp[i]=temp[i]+a[i][j]*b[i][j];
+   //temp[i]=temp[i]+*a[i][j]*b[i][j];
+   sum += a[i][j] * b[i][j];
+   //sum += (*(a+11*i+j)) * (*(b+11*i+j));
   }
  }
- sum=0;
- for(j=0; j<11; j++)
-   {
-    sum=sum+temp[j];
-   }
- c=sum;
+ /*sum=0;
+	for(j=0; j<11; j++)
+			{
+				sum=sum+temp[j];
+			}
+	c=sum; */
+ *c = sum;
+}
+#pragma empty_line
+#pragma empty_line
+// Convolve the whole image
+#pragma empty_line
+void conv_layer1(data_t image[227][227][3], data_t convKernels1[11][11][3][96],data_t bias1[96], data_t FMap1[55][55][96])
+{
+#pragma empty_line
+#pragma empty_line
 }

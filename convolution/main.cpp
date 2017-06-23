@@ -12,7 +12,7 @@ using namespace std;
 int main()
 {
 	data_t a[11][11], b[11][11];
-	data_t c;
+	data_t c, FMap1[55][55][96];
 	//generate random matrix for inputs a,b for testing
 	srand((unsigned)time(NULL));
 
@@ -25,7 +25,7 @@ int main()
 		}
 	}
 		//
-	c=conv(a,b);
-//	conv_layer1(image,convKernels1,Bias);
+	conv(a,b,&c);
+//	FMap1=conv_layer1(image,convKernels1,Bias);
 return 0;
 }

@@ -6,57 +6,12 @@
       <simLog/>
       <mgLog/>
       <packageLog/>
-      <csimLog>
-        <logs message="ERROR: [SIM 211-100] 'csim_design' failed: compilation error(s)." projectName="convolution" solutionName="solution1" date="2017-06-23T13:13:51.937-0700"/>
-        <logs message="ERROR: [SIM 211-100] 'csim_design' failed: compilation error(s)." projectName="convolution" solutionName="solution1" date="2017-06-23T13:12:55.367-0700"/>
-        <logs message="ERROR: [SIM 211-100] 'csim_design' failed: compilation error(s)." projectName="convolution" solutionName="solution1" date="2017-06-23T13:09:56.872-0700"/>
-        <logs message="ERROR: [SIM 211-100] 'csim_design' failed: compilation error(s)." projectName="convolution" solutionName="solution1" date="2017-06-23T12:43:48.915-0700"/>
-        <logs message="ERROR: [SIM 211-100] 'csim_design' failed: compilation error(s)." projectName="convolution" solutionName="solution1" date="2017-06-23T12:42:54.466-0700"/>
-      </csimLog>
+      <csimLog/>
     </logs>
   </errorLogs>
   <warningLogs>
     <logs>
-      <synLog>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/c' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.695-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_q1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.687-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_d1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.667-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_d1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.657-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_we1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.640-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_we1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.621-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_ce1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.611-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_ce1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.593-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_address1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.582-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_address1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.572-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_q0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.563-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_d0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.537-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_d0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.489-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_we0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.473-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_we0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.465-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_ce0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.456-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_ce0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.447-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/b_address0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.440-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/b_address0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.432-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_q1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.424-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_d1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.393-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_d1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.386-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_we1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.378-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_we1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.364-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_ce1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.355-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_ce1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.334-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_address1' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.324-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_address1' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.302-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_q0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.276-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_d0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.269-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_d0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.242-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_we0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.234-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_we0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.220-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_ce0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.207-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_ce0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.200-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Setting dangling out port 'conv/a_address0' to 0." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.176-0700" type="Warning"/>
-        <logs message="WARNING: [RTGEN 206-101] Port 'conv/a_address0' has no fanin or fanout and is left dangling.&#xD;&#xA;               Please use C simulation to confirm this function argument can be read from or written to." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:47.169-0700" type="Warning"/>
-        <logs message="WARNING: [SYNCHK 200-77] The top function 'conv' (conv.cpp:2) has no outputs. Possible cause(s) are: (1) Output parameters are passed by value; (2) intended outputs (parameters or global variables) are never written; (3) there are infinite loops." projectName="convolution" solutionName="solution1" date="2017-06-23T02:48:46.593-0700" type="Warning"/>
-      </synLog>
+      <synLog/>
       <simLog/>
       <mgLog/>
       <packageLog/>
