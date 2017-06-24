@@ -19,18 +19,23 @@ data_t Conv1Kernel[11][11][3][96];
 data_t image[227][227][3];
 int main()
 {
-	data_t a[11][11], b[11][11];
-	data_t c, conv1[55][55][96];
-	int i,j,k;
+	data_t  conv1[55][55][96];
 	// Read data from .dat files generated in matlab to an array
 	// Image data is all ones now. In matlab I will give similar input image and get the results
 	readToArray();
-
-	//conv(a,b,&c);
-//	conv1=conv_layer1(image);//,convKernels1,data_t biasData);
+	std::cout << "Length of array = " << (sizeof(image)/sizeof(*image)) << std::endl;
+//  conv(a,b,&c);
 	conv_layer1(conv1, image, Conv1Kernel, biasData, 11, 4);
 
-	printf("*******************************************");
+	printf("********************END***********************");
+	for (int i = 0; i < 55; i++)
+	{
+		for (int j = 0; j < 55; j++)
+		{
+			for (int k = 0; k < 96; k++)
+                printf("element of O/P FM at = %f \n",conv1[i][j][k]);
+		}
+	}
 	//FMap1=conv_layer1(image,convKernels1,Bias);
 return 0;
 }
@@ -39,7 +44,8 @@ return 0;
 /// read data
 void readToArray()
 {	// reading kernel weights
-	std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
+	std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1KernelWeights.dat");
+	//std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
 	//git/CNN_HLS_implementation/convolution/data/conv1kernels.dat");
 	//("D:\\venky\\workdir\\designs\\convolution\\data\\conv1kernels.dat");
     int dim=3; // 3 kerners, one for each RGB
@@ -90,6 +96,7 @@ for(int m=0; m<96; m++){
 			for (int j = 0; j < 11; j++)
 			{
 				Conv1Kernel[i][j][dim][m] = data[i+(11*dim)][j+(11*m)];//[dim*i*11 + j][k];
+//				printf("element of array at = %f \n",Conv1Kernel[i][j][dim][m]);
 			}
 		}
 	}
@@ -100,7 +107,10 @@ for(int m=0; m<96; m++){
 		for (int j = 0; j < 227; j++)
 		{
 			for (int k = 0; k < 3; k++)
-			image[i][j][k]=1;
+            {
+                image[i][j][k]=1;
+     //           printf("element of O/P FM at = %f \n",image[i][j][k]);
+            }
 		}
 	}
 }

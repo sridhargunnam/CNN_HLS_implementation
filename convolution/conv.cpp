@@ -1,6 +1,9 @@
 // matrix dot product and summation
 #include "conv.h"
-void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
+//
+#include <stdio.h>
+//
+/*void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
 {
 	data_t sum = 0;
 //	data_t temp[11];
@@ -15,23 +18,15 @@ void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
 		}
 	}
 	*c = sum;
-}
+}*/
 
-
-	// Convolve the whole image
-	//int conv_layer1(data_t image,data_t convKernels1,data_t bias1, data_t stride);
-	/*int conv_layer1(data_t image[227][227][3])//, data_t convKernels1[11][11][3][96],data_t bias1[96], data_t FMap1[55][55][96])
-{
-
-	return 0;
-}
-*/
-
+// Convolve the whole image to generate output feature map
 void conv_layer1(data_t (&conv1)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
 		data_t (&bias)[1][1][1][96], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
 {
-	int M=3;
-	int Wout=227, Hout=227, wStart, hStart;
+	int M=96;
+	int Wout=55, Hout=55, wStart, hStart;
+
 	//int conv1[55][55][96]=0;
 	// for each output featuremap, for each output pixel in that Fmap compute
 	// Lets say each output feature map is of size Wout X Hout
@@ -48,19 +43,30 @@ void conv_layer1(data_t (&conv1)[55][55][96], data_t (&image)[227][227][3], data
 		}
 	}
 }
-
-
-data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], data_t m )
+// Convolves weights and input feature maps for the given point in output Feature map
+data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m )
 {
 	data_t sum=0;
-	int i=0,j=0;
-	for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++)
-	{
-		for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++)
-			{
-			sum += image[w][h][1]*convKernels[i][j][1][m];
-			j=j+1;
-			}
-		i=i+1;
-	}
+	int i,j;
+	for(int n=0;n<3;n++)
+    {
+        i=0;j=0;
+        // interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
+        for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++)
+        {
+            for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++)
+            {
+       //         printf("element of O/P FM at = %f \n",convKernels[i][j][n][m]);
+                sum += image[w][h][n]*convKernels[i][j][n][m];
+                j=j+1;
+            }
+            i=i+1;
+ //       printf("element of O/P FM at = %f \n",sum);
+        }
+//        printf("element of O/P FM at = %f \n",sum);
+
+    }
+
+
+	return sum;
 }
