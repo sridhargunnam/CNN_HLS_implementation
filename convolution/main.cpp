@@ -13,7 +13,7 @@
 //
 using namespace std;
 void readToArray();
-data_t data[1056][11];
+data_t data[33][1056];
 data_t biasData[1][1][1][96];
 data_t Conv1Kernel[11][11][3][96];
 data_t image[227][227][3];
@@ -39,10 +39,11 @@ return 0;
 /// read data
 void readToArray()
 {	// reading kernel weights
-	std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1kernels.dat");
-	for (int dim = 0; dim < 3; ++dim)
-	{
-	for (int row = 0; row < 11; ++row)
+	std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
+	//git/CNN_HLS_implementation/convolution/data/conv1kernels.dat");
+	//("D:\\venky\\workdir\\designs\\convolution\\data\\conv1kernels.dat");
+    int dim=3; // 3 kerners, one for each RGB
+	for (int row = 0; row < 11*dim; ++row)
 	{
 		std::string line;
 		std::getline(file, line);
@@ -55,32 +56,43 @@ void readToArray()
 			std::getline(iss, val, ',');
 
 			std::stringstream convertor(val);
-			convertor >> data[dim][row][col];
+			convertor >> data[row][col];//data[dim][row][col];
 		}
 	}
-	}
+
+//	file.close();
 	// reading bias
-	std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1Bias.dat");
+/*	std::ifstream file1("/home/gunman/Downloads/summer17/alexnet/git/CNN_HLS_implementation/convolution/data/conv1Bias.dat");
+	//("D:\\venky\\workdir\\designs\\convolution\\data\\conv1Bias.dat");
 	for (int row = 0; row < 96; ++row)
 	{
 		std::string line;
-		std::getline(file, line);
-		if (!file.good())
+		std::getline(file1, line);
+		if (!file1.good())
 			break;
 		std::stringstream iss(line);
 		iss >> biasData[1][1][1][row];
 	}
+*/
+	for(int row = 0; row < 96; ++row)
+	{
+	biasData[1][1][1][row]=0;
+	}
+
 // converting kernel weights to proper Array Format
 // Restructures array to make to easily usable with indexing
-	for (int i = 0; i < 96; i++)
+// we need weights in array of size 11 X 11 X 3 X 96 from 33 X 1056 format
+for(int m=0; m<96; m++){
+	for (int dim = 0; dim < 3; dim++)
 	{
-		for (int j = 0; j < 11; j++)
+		for (int i = 0; i < 11; i++)
 		{
-			for (int k = 0; k < 11; k++)
+			for (int j = 0; j < 11; j++)
 			{
-				Conv1Kernel[i][j][k] = data[i*11 + j][k];
+				Conv1Kernel[i][j][dim][m] = data[i+(11*dim)][j+(11*m)];//[dim*i*11 + j][k];
 			}
 		}
+	}
 	}
 // making a dummy image all ones
 	for (int i = 0; i < 227; i++)
