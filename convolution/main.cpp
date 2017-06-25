@@ -13,24 +13,25 @@
 //
 using namespace std;
 void readToArray();
-data_t data[33][1056];
-data_t biasData[1][1][1][96];
-data_t Conv1Kernel[11][11][3][96];
-data_t pool1[27][27][96];
 data_t image[227][227][3];
+data_t data[33][1056]; // to read matlab kernel weights ; Conv1Kernel data from matlab
+data_t Conv1Kernel[11][11][3][96];
+data_t biasData1[1][1][1][96];
+data_t conv1[55][55][96];
+data_t relu1[55][55][96];
+data_t pool1[27][27][96];
+
 int main()
 {
-	data_t  conv1[55][55][96];
 	// Read data from .dat files generated in matlab to an array
 	// Image data is all ones now. In matlab I will give similar input image and get the results
 	readToArray();
 	std::cout << "Length of array = " << (sizeof(image)/sizeof(*image)) << std::endl;
 //  conv(a,b,&c);
-	conv_layer1(conv1, image, Conv1Kernel, biasData, 11, 4);
-
-    max_pool(pool1, conv1, MAX_POOL_WIN1, MAX_POOL_STRIDE1);
-    relu(data_t (&conv)[55][55][96], data_t (&relu)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPS );
-    max_pool(data_t (&conv)[55][55][96], data_t FMAP_WIDTH, data_t FMAPS, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE);
+	conv_layer1(conv1, image, Conv1Kernel, biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
+    //max_pool(pool1, conv1, MAX_POOL_WIN1, MAX_POOL_STRIDE1);
+    relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+    max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
 /*
 	for (int i = 0; i < 55; i++)
 	{
@@ -88,7 +89,7 @@ void readToArray()
 */
 	for(int row = 0; row < 96; ++row)
 	{
-	biasData[1][1][1][row]=0;
+	biasData1[1][1][1][row]=0;
 	}
 
 // converting kernel weights to proper Array Format

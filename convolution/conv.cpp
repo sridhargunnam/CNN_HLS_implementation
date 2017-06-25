@@ -63,15 +63,15 @@ data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data
             i=i+1;
  //       printf("element of O/P FM at = %f \n",sum);
         }
-        printf("element of O/P FM at = %d \n",sum);
+//        printf("element of O/P FM at = %d \n",sum);
 
     }
 
 
 	return sum;
 }
-
-relu(data_t (&conv)[55][55][96], data_t (&relu)[55][55][96], data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS );
+// relu
+void relu( data_t (&relu)[55][55][96], data_t (&conv)[55][55][96], data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS )
 {
     for(int m=0; m<CONV1_FMAPS; m++)
     {
@@ -84,13 +84,13 @@ relu(data_t (&conv)[55][55][96], data_t (&relu)[55][55][96], data_t CONV1_FMAP_W
         }
     }
 }
-
-max_pool(data_t (&pool)[27][27][96], data_t (&conv)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPs, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE)
+// max pooling
+void max_pool(data_t (&pool)[27][27][96], data_t (&relu)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPs, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE)
 {
-    int  Wout, Hout;
+    int  Wout, Hout, hStart, wStart;
     Wout = (CONV_FMAP_WIDTH-MAX_POOL_KERNEL_SIZE)/MAX_POOL_STRIDE + 1;
     Hout = Wout ; // since we are dealing with square Feature maps
-    for(int m=0; m<CONV_FMAPS; m++)
+    for(int m=0; m < int(CONV1_FMAPS); m++)
     {
         for(int h=0; h<Hout; h++)
         {
@@ -101,11 +101,11 @@ max_pool(data_t (&pool)[27][27][96], data_t (&conv)[55][55][96], data_t CONV_FMA
                 wStart = (w)*MAX_POOL_STRIDE;
            //     wEnd=wStart+MAX_POOL_KERNEL_SIZE;
                 pool[w][h][m]=0;
-                for(int h=hStart; h<hstart+MAX_POOL_STRIDE; h++)
+                for(int hk=hStart; hk<hStart+MAX_POOL_STRIDE; hk++)     // hk, wk are pool kernel size
                 {
-                    for(int w=wStart; w<wStart+MAX_POOL_STRIDE; w++)
+                    for(int wk=wStart; wk<wStart+MAX_POOL_STRIDE; wk++)
                     {
-                    pool[w][h][m]=(pool[w][h][m]>conv[w][h][m])? pool[w][h][m] : conv[w][h][m];
+                    pool[w][h][m]=(pool[w][h][m]>relu[wk][hk][m])? pool[w][h][m] : relu[wk][hk][m];
                     }
                 }
             }
