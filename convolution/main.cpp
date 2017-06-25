@@ -16,6 +16,7 @@ void readToArray();
 data_t data[33][1056];
 data_t biasData[1][1][1][96];
 data_t Conv1Kernel[11][11][3][96];
+data_t pool1[27][27][96];
 data_t image[227][227][3];
 int main()
 {
@@ -27,7 +28,10 @@ int main()
 //  conv(a,b,&c);
 	conv_layer1(conv1, image, Conv1Kernel, biasData, 11, 4);
 
-	printf("********************END***********************");
+    max_pool(pool1, conv1, MAX_POOL_WIN1, MAX_POOL_STRIDE1);
+    relu(data_t (&conv)[55][55][96], data_t (&relu)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPS );
+    max_pool(data_t (&conv)[55][55][96], data_t FMAP_WIDTH, data_t FMAPS, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE);
+/*
 	for (int i = 0; i < 55; i++)
 	{
 		for (int j = 0; j < 55; j++)
@@ -36,6 +40,8 @@ int main()
                 printf("element of O/P FM at = %f \n",conv1[i][j][k]);
 		}
 	}
+	*/
+    printf("********************END***********************");
 	//FMap1=conv_layer1(image,convKernels1,Bias);
 return 0;
 }

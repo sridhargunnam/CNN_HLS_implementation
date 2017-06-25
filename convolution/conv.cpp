@@ -63,10 +63,53 @@ data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data
             i=i+1;
  //       printf("element of O/P FM at = %f \n",sum);
         }
-//        printf("element of O/P FM at = %f \n",sum);
+        printf("element of O/P FM at = %d \n",sum);
 
     }
 
 
 	return sum;
 }
+
+relu(data_t (&conv)[55][55][96], data_t (&relu)[55][55][96], data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS );
+{
+    for(int m=0; m<CONV1_FMAPS; m++)
+    {
+        for(int w=0; w<CONV1_FMAP_WIDTH; w++)
+        {
+            for(int h=0; h<CONV1_FMAP_WIDTH; h++)
+            {
+                relu[w][h][m]=(conv[w][h][m]>0) ? conv[w][h][m] : 0;
+            }
+        }
+    }
+}
+
+max_pool(data_t (&pool)[27][27][96], data_t (&conv)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPs, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE)
+{
+    int  Wout, Hout;
+    Wout = (CONV_FMAP_WIDTH-MAX_POOL_KERNEL_SIZE)/MAX_POOL_STRIDE + 1;
+    Hout = Wout ; // since we are dealing with square Feature maps
+    for(int m=0; m<CONV_FMAPS; m++)
+    {
+        for(int h=0; h<Hout; h++)
+        {
+            hStart = h*MAX_POOL_STRIDE;
+         //   hEnd=hStart+MAX_POOL_KERNEL_SIZE;
+            for(int w=0; w<Wout; w++)
+            {
+                wStart = (w)*MAX_POOL_STRIDE;
+           //     wEnd=wStart+MAX_POOL_KERNEL_SIZE;
+                pool[w][h][m]=0;
+                for(int h=hStart; h<hstart+MAX_POOL_STRIDE; h++)
+                {
+                    for(int w=wStart; w<wStart+MAX_POOL_STRIDE; w++)
+                    {
+                    pool[w][h][m]=(pool[w][h][m]>conv[w][h][m])? pool[w][h][m] : conv[w][h][m];
+                    }
+                }
+            }
+        }
+    }
+}
+
