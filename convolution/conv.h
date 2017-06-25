@@ -23,3 +23,6 @@ void conv_layer1(data_t (&conv1)[55][55][96], data_t (&image)[227][227][3], data
 data_t mult_acc(data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m );
 void relu( data_t (&relu)[55][55][96], data_t (&conv)[55][55][96], data_t CONV_FMAP_WIDTH, data_t CONV_FMAPS );
 void max_pool(data_t (&pool)[27][27][96], data_t (&relu)[55][55][96], data_t FMAP_WIDTH, data_t FMAPS, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE);
+void lrn(data_t (&lrn)[27][27][96], data_t (&pool)[27][27][96],int localSize, float alpha, float beta, int k);
+void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96], int w, int h, int mStart, int mEnd);
+void exponent(data_t expTempBeta, data_t temp, data_t beta);

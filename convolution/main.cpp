@@ -20,28 +20,30 @@ data_t biasData1[1][1][1][96];
 data_t conv1[55][55][96];
 data_t relu1[55][55][96];
 data_t pool1[27][27][96];
-
+data_t lrn1[27][27][96];
 int main()
 {
 	// Read data from .dat files generated in matlab to an array
 	// Image data is all ones now. In matlab I will give similar input image and get the results
 	readToArray();
-	std::cout << "Length of array = " << (sizeof(image)/sizeof(*image)) << std::endl;
+//	std::cout << "Length of array = " << (sizeof(image)/sizeof(*image)) << std::endl;
 //  conv(a,b,&c);
 	conv_layer1(conv1, image, Conv1Kernel, biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
     //max_pool(pool1, conv1, MAX_POOL_WIN1, MAX_POOL_STRIDE1);
     relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
     max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
-/*
-	for (int i = 0; i < 55; i++)
+    lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+
+	for (int i = 0; i < 27; i++)
 	{
-		for (int j = 0; j < 55; j++)
+		for (int j = 0; j < 27; j++)
 		{
 			for (int k = 0; k < 96; k++)
-                printf("element of O/P FM at = %f \n",conv1[i][j][k]);
+                printf("element of O/P FM at = %d \n",lrn1[i][j][k]);
 		}
 	}
-	*/
+
+
     printf("********************END***********************");
 	//FMap1=conv_layer1(image,convKernels1,Bias);
 return 0;

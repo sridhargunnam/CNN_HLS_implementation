@@ -113,3 +113,71 @@ void max_pool(data_t (&pool)[27][27][96], data_t (&relu)[55][55][96], data_t CON
     }
 }
 
+
+/* lrn : Local Response Normalization across nearby channels
+function [ lrn ] = lrn( pool, localSize, alpha, beta, k )
+%Local Response Normalization across nearby channels.
+%pool is a 3d matrix: W x H x M.
+%lrn is a 3d matrix: W x H x M.
+%localSize, alpha, beta and k are integers.
+%The output pixels depend only on pixels of nearby feature maps at the same position
+%(same w/h coordinates).
+%Formula:
+%lrn_xy_i=pool_xy_i/(k+alpha/localSize*sum_i(pool_xy_i^2))^beta.
+%The padding pixels consist of zeros.
+*/
+void lrn(data_t (&lrn)[27][27][96], data_t (&pool)[27][27][96], int localSize, float alpha, float beta, int k)
+{
+    int W=27, H=27, M=96;
+    // set lrn to zero
+    for(int w=0; w<W; w++)
+    {
+        for(int h=0; h<H; h++)
+        {
+            for(int m=0; m<M; m++)
+            {
+                lrn[w][h][m]= 0;
+            }
+        }
+    }
+    // compute lrn
+    int lsby2=localSize>>2; // local size by 2
+    for(int w=0; w<W; w++)
+    {
+        for(int h=0; h<H; h++)
+        {
+            for(int m=0; m<M; m++)
+            {
+                // formulae
+                // lrn[w][h][m] = pool[w][h][m] / ((k+alpha/localSize*sum(pool(w,h,mStart:mEnd).^2))^beta)
+                int mStart, mEnd, mMinuslsby2, mPluslsby2, sum2=0, temp,expTempBeta;
+                mMinuslsby2=m-lsby2;
+                mPluslsby2=m+lsby2;
+                mStart=(mMinuslsby2 > 1)?(mMinuslsby2):1;
+                mEnd=(mPluslsby2 > M)? M : mPluslsby2;
+                sum2_lrn_kernel(sum2, pool, w, h, mStart, mEnd);
+                temp = ( k + alpha/localSize*sum2 ) ;
+                exponent(expTempBeta, temp , beta);
+                //lrn[w][h][m] = pool[w][h][m] / ( exponent(( k + alpha/localSize*sum2 ) , beta));//(((k + (alpha/localSize*sum2))^beta)
+                lrn[w][h][m] = pool[w][h][m] / (expTempBeta) ;//(((k + (alpha/localSize*sum2))^beta)
+            }
+        }
+    }
+}
+// sum of dot product of lru kernel
+void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96],
+                     int w, int h, int mStart, int mEnd)
+{
+    data_t temp_sum2=0;
+    for(int m=mStart; m<=mEnd; m++)
+        {
+            temp_sum2 += pool[w][h][m]*pool[w][h][m];
+        }
+        sum2=temp_sum2;
+}
+
+void exponent(data_t expTempBeta, data_t temp, data_t beta)
+{
+    expTempBeta=temp^beta;
+}
+
