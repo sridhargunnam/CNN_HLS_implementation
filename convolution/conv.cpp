@@ -1,32 +1,31 @@
-// matrix dot product and summation
+//Sub-routines for convolution, relu, max pooling, lrn layers
 #include "conv.h"
-//
 #include <stdio.h>
-//
-/*void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t* c)
-{
-	data_t sum = 0;
-//	data_t temp[11];
-	for(int i=0; i<11; i++)
-	{
-		//temp[i]=0;
-		for(int j=0; j<11; j++)
-		{
-			//temp[i]=temp[i]+*a[i][j]*b[i][j];
-			sum += a[i][j] * b[i][j];
-			//sum += (*(a+11*i+j)) * (*(b+11*i+j));
-		}
-	}
-	*c = sum;
-}*/
 
 // Convolve the whole image to generate output feature map
-void conv_layer1(data_t (&conv1)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
+void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
 		data_t (&bias)[1][1][1][96], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
 {
-	int M=96;
+	int M=96; //int pad=0;
 	int Wout=55, Hout=55, wStart, hStart;
-
+ //   Win=227; Hin=227;
+    // Padding required for conv layers other than 1st conv layer.
+/*
+    data_t convPadded[Win+2*pad][Hin+2*pad][M];
+	for(int w=0; w<Win; w++){
+		for(int h=0; h<Hin; h++){
+			for(int m=0; m<M; m++){
+			}
+		}
+	}
+*/
+	for(int w=0; w<Wout; w++){
+		for(int h=0; h<Hout; h++){
+			for(int m=0; m<M; m++){
+			conv[w][h][m]=0;
+			}
+		}
+	}
 	//int conv1[55][55][96]=0;
 	// for each output featuremap, for each output pixel in that Fmap compute
 	// Lets say each output feature map is of size Wout X Hout
@@ -38,7 +37,8 @@ void conv_layer1(data_t (&conv1)[55][55][96], data_t (&image)[227][227][3], data
             //hEnd=hStart+CONV_KERNEL_LENGTH-1;
 			// Now for each of the output feature map ( total o/p feature maps=M)
 			for(int m=0; m<M; m++){
-				conv1[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m );
+				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m ) ;
+				conv[w][h][m]+=bias[1][1][1][m];
 			}
 		}
 	}
@@ -52,22 +52,22 @@ data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data
     {
         i=0;j=0;
         // interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-        for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++)
+        for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
         {
-            for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++)
+            for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
             {
-       //         printf("element of O/P FM at = %f \n",convKernels[i][j][n][m]);
-                sum += image[w][h][n]*convKernels[i][j][n][m];
-                j=j+1;
+//                printf("conv kernel at w=%d h=%d i/p map=%d = %f, input image=%f \n",w,h,n,convKernels[i][j][n][m],image[w][h][n]);
+                sum += image[h][w][n]*convKernels[i][j][n][m];
+                //j=j+1;
             }
-            i=i+1;
+            j=0;
+            //i=i+1;
  //       printf("element of O/P FM at = %f \n",sum);
         }
+        i=0;
 //        printf("element of O/P FM at = %d \n",sum);
 
     }
-
-
 	return sum;
 }
 // relu
@@ -82,6 +82,7 @@ void relu( data_t (&relu)[55][55][96], data_t (&conv)[55][55][96], data_t CONV1_
                 relu[w][h][m]=(conv[w][h][m]>0) ? conv[w][h][m] : 0;
             }
         }
+ //      printf("element of relu at 0 0 %d is %f\n",relu[0][0][m]);
     }
 }
 // max pooling
@@ -178,6 +179,6 @@ void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96],
 
 void exponent(data_t expTempBeta, data_t temp, data_t beta)
 {
-    expTempBeta=temp^beta;
+    expTempBeta=temp*beta;
 }
 
