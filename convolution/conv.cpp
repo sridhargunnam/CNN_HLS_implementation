@@ -1,8 +1,7 @@
 //Sub-routines for convolution, relu, max pooling, lrn layers
 #include "conv.h"
 #include <stdio.h>
-
-// Convolve the whole image to generate output feature map
+// Convolve the whole image to generate M output feature map
 void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
 		data_t (&bias)[1][1][1][96], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
 {
