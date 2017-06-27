@@ -7,12 +7,13 @@
 #include <iomanip>
 #include <ctime>
 #include <cstdlib>
-// To read data array
+// To read data array from .mat
 #include <fstream>
 #include <sstream>
 //
 using namespace std;
 void readToArray();
+void writeData();
 data_t image[227][227][3];
 data_t data[33][1056]; // to read matlab kernel weights ; Conv1Kernel data from matlab
 data_t Conv1Kernel[11][11][3][96];
@@ -24,15 +25,12 @@ data_t lrn1[27][27][96];
 int main()
 {
 	// Read data from .dat files generated in matlab to an array
-	// Image data is all ones now. In matlab I will give similar input image and get the results
 	readToArray();
-//	std::cout << "Length of array = " << (sizeof(image)/sizeof(*image)) << std::endl;
-//  conv(a,b,&c);
 	conv_layer1(conv1, image, Conv1Kernel, biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
-    //max_pool(pool1, conv1, MAX_POOL_WIN1, MAX_POOL_STRIDE1);
-    relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
-    max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
-    lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+   // relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+   // max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
+   // lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+    writeData();
 /*
 	for (int i = 0; i < 27; i++)
 	{
@@ -43,10 +41,46 @@ int main()
 		}
 	}
 */
-
     printf("********************END***********************");
-	//FMap1=conv_layer1(image,convKernels1,Bias);
 return 0;
+}
+//writeData
+void writeData()
+{
+
+    if( remove( "D:\\venky\\workdir\\designs\\convolution\\data\\Output.txt" ) != 0 )
+        perror( "Error deleting file" );
+    else
+        puts( "File successfully deleted" );
+ /*   FILE * (filew);
+    filew=fopen("D:\\venky\\workdir\\designs\\matlab-alexnet\\alexnet-forwardpath-master\\alexnet-forwardpath-master\\Output.txt","wt"); // notice "wt" instead of "w"
+	for (int m = 0; m < 96; m++)
+	{
+		for (int i = 0; i < 55; i++)
+		{
+			for (int j = 0; j < 55; j++)
+            {
+                fprintf (filew, "%f ",conv1[i][j][m]); //  space after %f
+            }
+            fprintf (filew, "\n"); // new line
+		}
+	}
+	filew.close();
+	*/
+    // open the file (for writing because it is an ofstream, meaning "output file stream")
+    std::ofstream output("D:\\venky\\workdir\\designs\\convolution\\data\\Output.txt");
+    for (int m = 0; m < 3; m++)
+	{
+		for (int i = 0; i < 227; i++)
+		{
+			for (int j = 0; j < 227; j++)
+            {
+                output << image[i][j][m] << " "; //  space after %f
+            }
+            output << "\n" ;
+		}
+	}
+    output.close();
 }
 
 
@@ -55,9 +89,7 @@ void readToArray()
 {	// reading kernel weights
 	std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1KernelWeights.dat");
 	//std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
-	//git/CNN_HLS_implementation/convolution/data/conv1kernels.dat");
-	//("D:\\venky\\workdir\\designs\\convolution\\data\\conv1kernels.dat");
-    int dim=3; // 3 kerners, one for each RGB
+    int dim=3; // 3 dimensions, one for each RGB
 	for (int row = 0; row < 11*dim; ++row)
 	{
 		std::string line;
@@ -71,15 +103,12 @@ void readToArray()
 			std::getline(iss, val, ',');
 
 			std::stringstream convertor(val);
-			convertor >> data[row][col];//data[dim][row][col];
-     //       printf("bias at %d %d = %f \n",row,col, data[row][col]);
+			convertor >> data[row][col];
 		}
 	}
-
 	file.close();
-
 	// reading bias
-	//std::ifstream file1("/home/gunman/Downloads/summer17/alexnet/git/CNN_HLS_implementation/convolution/data/conv1Bias.dat");
+	//std::ifstream file1("/home/gunman/Downloads/summer17/alexnet/git/CNN_HLS_implementation/convolution/data/conv1BiasV2.dat");
 	std::ifstream file1("D:\\venky\\workdir\\designs\\convolution\\data\\conv1BiasV2.dat");
 	for (int row = 0; row < 1; ++row)
 	{
@@ -93,17 +122,12 @@ void readToArray()
 			std::string val1;
 			std::getline(iss1, val1, ',');
 			std::stringstream convertor1(val1);
-//			convertor1=10;
-			convertor1 >> biasData1[1][1][1][row];//data[dim][row][col];
+			convertor1 >> biasData1[1][1][1][row];
  //           printf("bias at %d = %f \n",row,biasData1[1][1][1][row]);
 		}
 	}
 	file1.close();
-/*	for(int row = 0; row < 96; ++row)
-	{
-	biasData1[1][1][1][row]=0;
-	}
-*/
+
 // converting kernel weights to proper Array Format
 // Restructures array to make to easily usable with indexing
 // we need weights in array of size 11 X 11 X 3 X 96 from 33 X 1056 format
@@ -114,7 +138,7 @@ for(int m=0; m<96; m++){
 		{
 			for (int j = 0; j < 11; j++)
 			{
-				Conv1Kernel[i][j][dim][m] = data[i+(11*dim)][j+(11*m)];//[dim*i*11 + j][k];
+				Conv1Kernel[i][j][dim][m] = data[i+(11*dim)][j+(11*m)];
 //				printf("element of array at = %f \n",Conv1Kernel[i][j][dim][m]);
 			}
 		}
@@ -135,12 +159,8 @@ for(int m=0; m<96; m++){
 	}
 */
 //////////////////////////////
-//std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1KernelWeights.dat");
-std::ifstream file3("D:\\venky\\workdir\\designs\\convolution\\data\\Image.dat");
-	//std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
-	//git/CNN_HLS_implementation/convolution/data/conv1kernels.dat");
-	//("D:\\venky\\workdir\\designs\\convolution\\data\\conv1kernels.dat");
-    int dim3=3; // 3 kerners, one for each RGB
+std::ifstream file3("D:\\venky\\workdir\\designs\\convolution\\data\\Image1.dat");
+    int dim3=3; // 3 dimensions, one for each RGB
     for (int row = 0; row < 227*(dim3); ++row)
     {
 		std::string line3;
@@ -158,4 +178,5 @@ std::ifstream file3("D:\\venky\\workdir\\designs\\convolution\\data\\Image.dat")
 		}
     }
 	file3.close();
+
 }
