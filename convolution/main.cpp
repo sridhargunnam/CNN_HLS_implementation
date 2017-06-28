@@ -25,11 +25,14 @@ data_t lrn1[27][27][96];
 int main()
 {
 	// Read data from .dat files generated in matlab to an array
+	//cout << biasData1[0][0][0][0] << endl;
 	readToArray();
+	//cout << biasData1[0][0][0][0] << endl;
 	conv_layer1(conv1, image, Conv1Kernel, biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
-   // relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
-   // max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
-   // lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+	//cout << biasData1[0][0][0][0] << endl;
+    relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+    max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
+    lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
     writeData();
 /*
 	for (int i = 0; i < 27; i++)
@@ -48,12 +51,12 @@ return 0;
 void writeData()
 {
 
-    if( remove( "D:\\venky\\workdir\\designs\\convolution\\data\\Output.txt" ) != 0 )
+    if( remove( "D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt" ) != 0 )
         perror( "Error deleting file" );
     else
         puts( "File successfully deleted" );
  /*   FILE * (filew);
-    filew=fopen("D:\\venky\\workdir\\designs\\matlab-alexnet\\alexnet-forwardpath-master\\alexnet-forwardpath-master\\Output.txt","wt"); // notice "wt" instead of "w"
+    filew=fopen("D:\\sridhar\\workdir\\CNN_HLS_implementation\\matlab-alexnet\\alexnet-forwardpath-master\\alexnet-forwardpath-master\\Output.txt","wt"); // notice "wt" instead of "w"
 	for (int m = 0; m < 96; m++)
 	{
 		for (int i = 0; i < 55; i++)
@@ -68,14 +71,15 @@ void writeData()
 	filew.close();
 	*/
     // open the file (for writing because it is an ofstream, meaning "output file stream")
-    std::ofstream output("D:\\venky\\workdir\\designs\\convolution\\data\\Output.txt");
-    for (int m = 0; m < 3; m++)
+    std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
+    for (int m = 0; m < 96; m++)
 	{
-		for (int i = 0; i < 227; i++)
+	//    output << biasData1[0][0][0][m] << " ";
+		for (int i = 0; i < 27; i++)
 		{
-			for (int j = 0; j < 227; j++)
+			for (int j = 0; j < 27; j++)
             {
-                output << image[i][j][m] << " "; //  space after %f
+                output << lrn1[j][i][m] << " "; //  space after %f   // matlab and c++ store array in different format. In matlab its coloumn wise, in c++ its row wise
             }
             output << "\n" ;
 		}
@@ -87,7 +91,7 @@ void writeData()
 /// read data
 void readToArray()
 {	// reading kernel weights
-	std::ifstream file("D:\\venky\\workdir\\designs\\convolution\\data\\conv1KernelWeights.dat");
+	std::ifstream file("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\conv1KernelWeights.dat");
 	//std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
     int dim=3; // 3 dimensions, one for each RGB
 	for (int row = 0; row < 11*dim; ++row)
@@ -109,7 +113,7 @@ void readToArray()
 	file.close();
 	// reading bias
 	//std::ifstream file1("/home/gunman/Downloads/summer17/alexnet/git/CNN_HLS_implementation/convolution/data/conv1BiasV2.dat");
-	std::ifstream file1("D:\\venky\\workdir\\designs\\convolution\\data\\conv1BiasV2.dat");
+	std::ifstream file1("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\conv1BiasV2.dat");
 	for (int row = 0; row < 1; ++row)
 	{
 		std::string line1;
@@ -121,8 +125,12 @@ void readToArray()
 		{
 			std::string val1;
 			std::getline(iss1, val1, ',');
+//			std::cout << val1<<endl;
+//			std::cout << strtof(val1.c_str(), NULL) << endl;
+//			biasData1[1][1][1][col] = strtof(val1.c_str(), NULL);
 			std::stringstream convertor1(val1);
-			convertor1 >> biasData1[1][1][1][row];
+			convertor1 >>biasData1[0][0][0][col];
+//			std::cout  << biasData1[0][0][0][col] <<endl;
  //           printf("bias at %d = %f \n",row,biasData1[1][1][1][row]);
 		}
 	}
@@ -159,7 +167,7 @@ for(int m=0; m<96; m++){
 	}
 */
 //////////////////////////////
-std::ifstream file3("D:\\venky\\workdir\\designs\\convolution\\data\\Image1.dat");
+std::ifstream file3("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Image1.dat");
     int dim3=3; // 3 dimensions, one for each RGB
     for (int row = 0; row < 227*(dim3); ++row)
     {
@@ -173,9 +181,13 @@ std::ifstream file3("D:\\venky\\workdir\\designs\\convolution\\data\\Image1.dat"
 			std::string val3;
 			std::getline(iss3, val3, ',');
 			std::stringstream convertor3(val3);
-			convertor3 >> image[row][col][(row/227)];
+			convertor3 >> image[(row%227)][col][(row/227)];
 //            printf("bias at %d %d %d = %f \n",row,col, row/3, image[row][col][int(row/3)]);
 		}
+//		if(row==228)
+ //       {
+ //           printf("bias at %d %d %d = %f \n",row,0, row/3, image[0][0][2]);
+ //       }
     }
 	file3.close();
 

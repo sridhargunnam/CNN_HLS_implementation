@@ -1,10 +1,13 @@
 //Sub-routines for convolution, relu, max pooling, lrn layers
 #include "conv.h"
 #include <stdio.h>
+#include <iostream>
+using namespace std;
 // Convolve the whole image to generate M output feature map
 void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
 		data_t (&bias)[1][1][1][96], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
 {
+//	std::cout << "Line 10" << bias[0][0][0][0] << endl;
 	int M=96; //int pad=0;
 	int Wout=55, Hout=55, wStart, hStart;
  //   Win=227; Hin=227;
@@ -18,6 +21,7 @@ void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_
 		}
 	}
 */
+//	std::cout <<  "Line 24" << bias[0][0][0][0] << endl;
 	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){
 			for(int m=0; m<M; m++){
@@ -28,6 +32,7 @@ void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_
 	//int conv1[55][55][96]=0;
 	// for each output featuremap, for each output pixel in that Fmap compute
 	// Lets say each output feature map is of size Wout X Hout
+//	std::cout << "Line 35" << bias[0][0][0][0] << endl;
 	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){
 			wStart=w*CONV_STRIDE;
@@ -36,11 +41,22 @@ void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_
             //hEnd=hStart+CONV_KERNEL_LENGTH-1;
 			// Now for each of the output feature map ( total o/p feature maps=M)
 			for(int m=0; m<M; m++){
-				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m ) ;
-				conv[w][h][m]+=bias[1][1][1][m];
+				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m );
+//				conv[w][h][m]+=bias[1][1][1][m];
 			}
 		}
 	}
+
+	// adding Bias
+//	std::cout << "Line 51 " << bias[0][0][0][0] << endl;
+    for(int m=0; m<M; m++){
+		for(int h=0; h<Hout; h++){
+			for(int w=0; w<Wout; w++){
+			conv[w][h][m]+=bias[0][0][0][m];
+			}
+		}
+	}
+	//std::cout << bias[0][0][0][0] << endl;
 }
 // Convolves weights and input feature maps for the given point in output Feature map
 data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m )
@@ -101,9 +117,9 @@ void max_pool(data_t (&pool)[27][27][96], data_t (&relu)[55][55][96], data_t CON
                 wStart = (w)*MAX_POOL_STRIDE;
            //     wEnd=wStart+MAX_POOL_KERNEL_SIZE;
                 pool[w][h][m]=0;
-                for(int hk=hStart; hk<hStart+MAX_POOL_STRIDE; hk++)     // hk, wk are pool kernel size
+                for(int hk=hStart; hk<hStart+MAX_POOL_KERNEL_SIZE; hk++)     // hk, wk are pool kernel size
                 {
-                    for(int wk=wStart; wk<wStart+MAX_POOL_STRIDE; wk++)
+                    for(int wk=wStart; wk<wStart+MAX_POOL_KERNEL_SIZE; wk++)
                     {
                     pool[w][h][m]=(pool[w][h][m]>relu[wk][hk][m])? pool[w][h][m] : relu[wk][hk][m];
                     }
@@ -141,7 +157,8 @@ void lrn(data_t (&lrn)[27][27][96], data_t (&pool)[27][27][96], int localSize, f
         }
     }
     // compute lrn
-    int lsby2=localSize>>2; // local size by 2
+    int lsby2=localSize/2; // local size by 2
+  //  std::cout << " lsby2 = " << lsby2 << "\n" ;
     for(int w=0; w<W; w++)
     {
         for(int h=0; h<H; h++)
@@ -150,15 +167,26 @@ void lrn(data_t (&lrn)[27][27][96], data_t (&pool)[27][27][96], int localSize, f
             {
                 // formulae
                 // lrn[w][h][m] = pool[w][h][m] / ((k+alpha/localSize*sum(pool(w,h,mStart:mEnd).^2))^beta)
-                int mStart, mEnd, mMinuslsby2, mPluslsby2, sum2=0, temp,expTempBeta;
+                data_t mStart, mEnd, mMinuslsby2, mPluslsby2, sum2=0, temp,expTempBeta;
                 mMinuslsby2=m-lsby2;
                 mPluslsby2=m+lsby2;
-                mStart=(mMinuslsby2 > 1)?(mMinuslsby2):1;
-                mEnd=(mPluslsby2 > M)? M : mPluslsby2;
-                sum2_lrn_kernel(sum2, pool, w, h, mStart, mEnd);
+                mStart=(mMinuslsby2 > 0)?(mMinuslsby2):0;
+                mEnd=(mPluslsby2 < M)? mPluslsby2 : M;
+                //sum2_lrn_kernel(sum2, pool, w, h, mStart, mEnd);
+                data_t temp_sum2=0;
+                for(int m=mStart; m<=mEnd; m++)
+                    {
+                    temp_sum2 += pool[w][h][m]*pool[w][h][m];
+                    }
+                sum2=temp_sum2;
+         //       std::cout << " sum2 = " << sum2 << "\n" ;
                 temp = ( k + alpha/localSize*sum2 ) ;
-                exponent(expTempBeta, temp , beta);
+          //      std::cout << " temp = " << temp << "\n" ;
+                expTempBeta=pow(temp,beta);
+          //      std::cout << " expTempBeta = " << expTempBeta << "\n" ;
+               // exponent(expTempBeta, temp , beta);
                 //lrn[w][h][m] = pool[w][h][m] / ( exponent(( k + alpha/localSize*sum2 ) , beta));//(((k + (alpha/localSize*sum2))^beta)
+          //      std::cout << " temp = pool[w][h][m] / (expTempBeta) " << pool[w][h][m] / (expTempBeta)<< "\n" ;
                 lrn[w][h][m] = pool[w][h][m] / (expTempBeta) ;//(((k + (alpha/localSize*sum2))^beta)
             }
         }
@@ -178,6 +206,6 @@ void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96],
 
 void exponent(data_t expTempBeta, data_t temp, data_t beta)
 {
-    expTempBeta=temp*beta;
+    expTempBeta=pow(temp,beta);
 }
 

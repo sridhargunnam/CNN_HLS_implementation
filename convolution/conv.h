@@ -3,6 +3,8 @@
 //#include "hls_math.h"
 // Use data-type “half”
 //typedef half data_t;
+//#include <stdio.h>      /* printf */
+#include <math.h>       /* pow */
 typedef float data_t;
 
 //typedef data_t image[227][227][3] ;
