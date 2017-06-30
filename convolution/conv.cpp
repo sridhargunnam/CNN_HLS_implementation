@@ -174,9 +174,9 @@ void lrn(data_t (&lrn)[27][27][96], data_t (&pool)[27][27][96], int localSize, f
                 mEnd=(mPluslsby2 < M)? mPluslsby2 : M;
                 //sum2_lrn_kernel(sum2, pool, w, h, mStart, mEnd);
                 data_t temp_sum2=0;
-                for(int m=mStart; m<=mEnd; m++)
+                for(int k1=mStart; k1<=mEnd; k1++)
                     {
-                    temp_sum2 += pool[w][h][m]*pool[w][h][m];
+                    temp_sum2 += pool[w][h][k1]*pool[w][h][k1];
                     }
                 sum2=temp_sum2;
          //       std::cout << " sum2 = " << sum2 << "\n" ;
