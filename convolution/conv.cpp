@@ -3,29 +3,126 @@
 #include <stdio.h>
 #include <iostream>
 using namespace std;
-// Convolve the whole image to generate M output feature map
-void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
-		data_t (&bias)[1][1][1][96], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
-{
-//	std::cout << "Line 10" << bias[0][0][0][0] << endl;
-	int M=96; //int pad=0;
-	int Wout=55, Hout=55, wStart, hStart;
- //   Win=227; Hin=227;
-    // Padding required for conv layers other than 1st conv layer.
+
+/////////////////////////////////////////////////////////////////
 /*
-    data_t convPadded[Win+2*pad][Hin+2*pad][M];
-	for(int w=0; w<Win; w++){
-		for(int h=0; h<Hin; h++){
-			for(int m=0; m<M; m++){
-			}
-		}
-	}
-*/
-//	std::cout <<  "Line 24" << bias[0][0][0][0] << endl;
+void conv_layer(data_t (&conv)[Wout][Hout][OPFMapsCnt], data_t (&image)[Win][Hin][InpFMapCnt], data_t (&convKernels)[WKer][HKer][InpFMapCnt][OPFMapsCnt],
+		data_t (&bias)[0][0][0][OPFMapsCnt], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE, data_int M, data_int Wout, data_int Hout, data_int Win, data_int Hin, data_int N, data_int group)
+		// N= inp fMaps count, M=output Fmaps count
+{
 	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){
 			for(int m=0; m<M; m++){
 			conv[w][h][m]=0;
+			}
+		}
+	}
+	// compute based on which group the convolution layer below to
+	if(group==1)
+	{
+	int wStart, hStart;
+	for(int w=0; w<Wout; w++){
+		for(int h=0; h<Hout; h++){
+			wStart=w*CONV_STRIDE;
+			hStart=h*CONV_STRIDE;
+			for(int m=0; m<M; m++){
+				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m, 1 );
+				conv[w][h][m]+=bias[0][0][0][m];
+			}
+		}
+	}
+	}
+	else if(group==2)
+	{
+	// for 0 to M/2 feature maps
+	int wStart, hStart;
+	for(int w=0; w<Wout; w++){
+		for(int h=0; h<Hout; h++){
+			wStart=w*CONV_STRIDE;
+			hStart=h*CONV_STRIDE;
+			for(int m=0; m< int(M/2); m++){
+				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m, 2 );
+				conv[w][h][m]+=bias[0][0][0][m];
+			}
+		}
+	}
+	// for M/2 + 1 to M feature maps
+	int wStart, hStart;
+	for(int w=0; w<Wout; w++){
+		for(int h=0; h<Hout; h++){
+			wStart=w*CONV_STRIDE;
+			hStart=h*CONV_STRIDE;
+			for(int m=(int(M/2)+1); m<M; m++){
+				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m, 3 );
+				conv[w][h][m]+=bias[0][0][0][m];
+			}
+		}
+	}
+	}
+}
+*/
+// Convolves weights and input feature maps for the given point in output Feature map
+/*
+data_t mult_acc (data_t (&image)[Win][Hin][InpFMapCnt],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[WKer][HKer][InpFMapCnt][OPFMapsCnt], data_int m, data_int InpFMapCnt, data_int group )
+{
+	data_t sum=0;
+	int i,j, nStart, nEnd;
+
+	switch(group) {
+		case 1:
+				nStart=0;
+				nEnd=InpFMapCnt;
+				break;
+		case 2:
+				nStart=0;
+				nEnd=int(InpFMapCnt/2);
+				break;
+		case 3:
+				nStart=int(InpFMapCnt/2)+1;
+				nEnd=InpFMapCnt;
+				break;
+		default:
+				nStart=0;
+				nEnd=0;
+	}
+
+	for(int n=nStart;n<nEnd;n++)
+    {
+        i=0;j=0;
+        // interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
+        for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
+        {
+            for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
+            {
+                sum += image[h][w][n]*convKernels[i][j][n][m];
+            }
+            j=0;
+        }
+        i=0;
+    }
+	return sum;
+}
+/////////////////////////////////////////////////////////////////
+*/
+// Convolve the whole image to generate M output feature map
+
+void conv_layer1(data_t *conv, data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
+		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
+//void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
+//		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
+{
+//	std::cout << "Line 10" << bias[0][0][0][0] << endl;
+	int M=96; //int pad=0;
+	int Wout=55, Hout=55, wStart, hStart;
+	float temp, temp1, *tempAddr;
+ //   Win=227; Hin=227;
+    // Padding required for conv layers other than 1st conv layer.
+
+//	std::cout <<  "Line 24" << bias[0][0][0][0] << endl;
+	for(int w=0; w<Wout; w++){
+		for(int h=0; h<Hout; h++){
+			for(int m=0; m<M; m++){
+				*( conv + m*(Wout*Hout) + h*Wout + w)=0;
 			}
 		}
 	}
@@ -41,7 +138,9 @@ void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_
             //hEnd=hStart+CONV_KERNEL_LENGTH-1;
 			// Now for each of the output feature map ( total o/p feature maps=M)
 			for(int m=0; m<M; m++){
-				conv[w][h][m]=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m );
+				*(conv + m*(Wout*Hout) + h*Wout + w)=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m );
+			//	temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
+			//	printf("conv at %d %d %d is %f \n",w,h,m,*(conv + m*(Wout*Hout) + h*Wout + w) );
 //				conv[w][h][m]+=bias[1][1][1][m];
 			}
 		}
@@ -52,7 +151,11 @@ void conv_layer1(data_t (&conv)[55][55][96], data_t (&image)[227][227][3], data_
     for(int m=0; m<M; m++){
 		for(int h=0; h<Hout; h++){
 			for(int w=0; w<Wout; w++){
-			conv[w][h][m]+=bias[0][0][0][m];
+				*( conv + m*(Wout*Hout) + h*Wout + w)+=*(bias+m);
+				temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
+		//		temp1=conv[w][h][m];
+		//		tempAddr = &conv + m*(Wout*Hout) + h*Wout + w;
+			//	printf("conv at %d %d %d is %f \n",w,h,m,*(conv + m*(Wout*Hout) + h*Wout + w) );
 			}
 		}
 	}
@@ -85,6 +188,13 @@ data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data
     }
 	return sum;
 }
+
+//
+//void conv_layer2(data_t (&conv)[Wout2][Wout2][OPFMapsCnt2], data_t (&image)[Win2][Win2][InpFMapCnt2], data_t (&convKernels2)[WKer2][WKer2][InpFMapCnt2][OPFMapsCnt2], data_t (&bias2)[0][0][0][OPFMapsCnt2]data_t CONV_KERNEL_LENGTH2, data_t CONV_STRIDE2, data_int M2, data_int Wout2, data_int Hout2, data_int Win2, data_int Hin2, data_int N2, data_int group2);
+//{
+//}
+//
+
 // relu
 void relu( data_t (&relu)[55][55][96], data_t (&conv)[55][55][96], data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS )
 {

@@ -22,17 +22,38 @@ data_t conv1[55][55][96];
 data_t relu1[55][55][96];
 data_t pool1[27][27][96];
 data_t lrn1[27][27][96];
+
+// layer 2
+data_t data2[33][2056]; // to read matlab kernel weights ; Conv2Kernel data from matlab
+data_t Conv2Kernel[22][22][3][96];
+data_t biasData2[2][2][2][96];
+data_t conv2[55][55][96];
+data_t relu2[55][55][96];
+data_t pool2[27][27][96];
+data_t lrn2[27][27][96];
+
+
 int main()
 {
 	// Read data from .dat files generated in matlab to an array
 	//cout << biasData1[0][0][0][0] << endl;
 	readToArray();
 	//cout << biasData1[0][0][0][0] << endl;
-	conv_layer1(conv1, image, Conv1Kernel, biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
+	for(int w=0; w<55; w++){
+			for(int h=0; h<55; h++){
+				for(int m=0; m<96; m++){
+					//*( conv + m*(Wout*Hout) + h*Wout + w)=0;
+					conv1[w][h][m]=0;
+				}
+			}
+	}
+	conv_layer1((data_t *)conv1, image, Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
+//	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
+
 	//cout << biasData1[0][0][0][0] << endl;
-    relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
-    max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
-    lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+ //   relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+  //  max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
+ //   lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
     writeData();
 /*
 	for (int i = 0; i < 27; i++)
@@ -50,28 +71,33 @@ return 0;
 //writeData
 void writeData()
 {
+	float temp1;
 
     if( remove( "D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt" ) != 0 )
         perror( "Error deleting file" );
     else
         puts( "File successfully deleted" );
- /*   FILE * (filew);
-    filew=fopen("D:\\sridhar\\workdir\\CNN_HLS_implementation\\matlab-alexnet\\alexnet-forwardpath-master\\alexnet-forwardpath-master\\Output.txt","wt"); // notice "wt" instead of "w"
-	for (int m = 0; m < 96; m++)
-	{
-		for (int i = 0; i < 55; i++)
-		{
-			for (int j = 0; j < 55; j++)
-            {
-                fprintf (filew, "%f ",conv1[i][j][m]); //  space after %f
-            }
-            fprintf (filew, "\n"); // new line
-		}
-	}
-	filew.close();
-	*/
-    // open the file (for writing because it is an ofstream, meaning "output file stream")
+
     std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
+
+    for (int m = 0; m < 96; m++)
+        {
+    	for (int h = 0; h < 55; h++)
+    		{
+    			for (int w = 0; w < 55; w++)
+                {
+
+    				output << *((data_t *)conv1 + m*(55*55) + h*55 + w)  << " ";  //  space after %f
+    				//temp1=conv1[w][h][m];
+    				//	temp1Addr = &conv1 + m*(55*55) + j*55 + i;
+    				//temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
+    				//	printf("conv at %d %d %d is %f \n",i,j,m,*(conv1 + m*(55*55) + j*55 + i) );
+    	    	}
+    			    output << "\n" ;
+            }
+    	}
+    output.close();
+   /* //////////////////////////////
     for (int m = 0; m < 96; m++)
 	{
 	//    output << biasData1[0][0][0][m] << " ";
@@ -85,6 +111,7 @@ void writeData()
 		}
 	}
     output.close();
+    */
 }
 
 
