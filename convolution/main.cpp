@@ -14,9 +14,9 @@
 using namespace std;
 void readToArray();
 void writeData();
-data_t image[227][227][3];
+data_t image[3][227][227];
 data_t data[33][1056]; // to read matlab kernel weights ; Conv1Kernel data from matlab
-data_t Conv1Kernel[11][11][3][96];
+data_t Conv1Kernel[96][3][11][11]; //[11][11][3][96];
 data_t biasData1[1][1][1][96];
 data_t conv1[55][55][96];
 data_t relu1[55][55][96];
@@ -47,7 +47,7 @@ int main()
 				}
 			}
 	}
-	conv_layer1((data_t *)conv1, image, Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
+	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
 //	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
 
 	//cout << biasData1[0][0][0][0] << endl;
@@ -87,7 +87,7 @@ void writeData()
     			for (int w = 0; w < 55; w++)
                 {
 
-    				output << *((data_t *)relu1 + m*(55*55) + h*55 + w)  << " ";  //  space after %f
+    				output << *((data_t *)conv1 + m*(55*55) + h*55 + w)  << " ";  //  space after %f
     				//temp1=conv1[w][h][m];
     				//	temp1Addr = &conv1 + m*(55*55) + j*55 + i;
     				//temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
@@ -176,7 +176,7 @@ for(int m=0; m<96; m++){
 		{
 			for (int j = 0; j < 11; j++)
 			{
-				Conv1Kernel[i][j][dim][m] = data[i+(11*dim)][j+(11*m)];
+				Conv1Kernel[m][dim][i][j] = data[i+(11*dim)][j+(11*m)];
 //				printf("element of array at = %f \n",Conv1Kernel[i][j][dim][m]);
 			}
 		}
@@ -211,7 +211,7 @@ std::ifstream file3("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\
 			std::string val3;
 			std::getline(iss3, val3, ',');
 			std::stringstream convertor3(val3);
-			convertor3 >> image[(row%227)][col][(row/227)];
+			convertor3 >> image[(row/227)][(row%227)][col];
 //            printf("bias at %d %d %d = %f \n",row,col, row/3, image[row][col][int(row/3)]);
 		}
 //		if(row==228)

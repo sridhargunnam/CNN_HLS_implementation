@@ -54,7 +54,7 @@ const unsigned MAX_POOL_STRIDE1=2;
 */
 //void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t *c);
 
-void conv_layer1(data_t *conv, data_t (&image)[227][227][3], data_t (&convKernels)[11][11][3][96],
+void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE);// data_t CONV1_STRIDE, data_t CONV1_PAD, data_t CONV1_GROUP );
 //void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 //		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE);// data_t CONV1_STRIDE, data_t CONV1_PAD, data_t CONV1_GROUP );
