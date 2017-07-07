@@ -35,36 +35,21 @@ data_t lrn2[27][27][96];
 
 int main()
 {
-	// Read data from .dat files generated in matlab to an array
-	//cout << biasData1[0][0][0][0] << endl;
+
 	readToArray();
-	//cout << biasData1[0][0][0][0] << endl;
 	for(int w=0; w<55; w++){
 			for(int h=0; h<55; h++){
 				for(int m=0; m<96; m++){
-					//*( conv + m*(Wout*Hout) + h*Wout + w)=0;
 					conv1[w][h][m]=0;
 				}
 			}
 	}
 	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
-//	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
-
-	//cout << biasData1[0][0][0][0] << endl;
     relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
     max_pool((data_t *)pool1, (data_t *)relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
     lrn((data_t *)lrn1, (data_t *)pool1 , 5, .0001, 0.75, 1);
     writeData();
-/*
-	for (int i = 0; i < 27; i++)
-	{
-		for (int j = 0; j < 27; j++)
-		{
-			for (int k = 0; k < 96; k++)
-                printf("element of O/P FM at = %d \n",lrn1[i][j][k]);
-		}
-	}
-*/
+
     printf("********************END***********************");
 return 0;
 }

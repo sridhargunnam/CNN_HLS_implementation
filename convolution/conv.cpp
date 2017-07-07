@@ -108,17 +108,13 @@ data_t mult_acc (data_t (&image)[Win][Hin][InpFMapCnt],data_t wStart, data_t hSt
 
 void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
-//void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
-//		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE)
 {
-//	std::cout << "Line 10" << bias[0][0][0][0] << endl;
 	int M=96; //int pad=0;
 	int Wout=55, Hout=55, wStart, hStart;
 	float temp, temp1, *tempAddr;
- //   Win=227; Hin=227;
+	//   Win=227; Hin=227;
     // Padding required for conv layers other than 1st conv layer.
 
-//	std::cout <<  "Line 24" << bias[0][0][0][0] << endl;
 	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){
 			for(int m=0; m<M; m++){
@@ -126,10 +122,9 @@ void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 			}
 		}
 	}
-	//int conv1[55][55][96]=0;
+
 	// for each output featuremap, for each output pixel in that Fmap compute
 	// Lets say each output feature map is of size Wout X Hout
-//	std::cout << "Line 35" << bias[0][0][0][0] << endl;
 	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){
 			wStart=w*CONV_STRIDE;
@@ -138,8 +133,6 @@ void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
             //hEnd=hStart+CONV_KERNEL_LENGTH-1;
 			// Now for each of the output feature map ( total o/p feature maps=M)
 			for(int m=0; m<M; m++){
-				//*(conv + m*(Wout*Hout) + h*Wout + w)=mult_acc(image, wStart, hStart, CONV_KERNEL_LENGTH,convKernels, m );
-
 					data_t sum=0;
 					int i,j;
 					for(int n=0;n<3;n++)
@@ -152,46 +145,24 @@ void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 				            {
 				//                printf("conv kernel at w=%d h=%d i/p map=%d = %f, input image=%f \n",w,h,n,convKernels[i][j][n][m],image[w][h][n]);
 				                sum += (*(image + n*227*227 + h*227 + w)) * (*(convKernels + i*11 + j + n*11*11 + m*11*11*3));//convKernels[i][j][n][m]; data_t Conv1Kernel[11][11][3][96];
-				                temp=(*(convKernels + i*11 + j + n*11*11 + m*11*11*3));
+				               // temp=(*(convKernels + i*11 + j + n*11*11 + m*11*11*3));
 				                //j=j+1;
 				            }
 				            j=0;
 				            //i=i+1;
-				 //       printf("element of O/P FM at = %f \n",sum);
 				        }
 				        i=0;
-				//        printf("element of O/P FM at = %d \n",sum);
-
 				    }
 				//
 				*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
-				temp=*(conv + m*(Wout*Hout) + h*Wout + w);
-				//*( conv + m*(Wout*Hout) + h*Wout + w)+=*(bias+m);
-			//	temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
-			//	printf("conv at %d %d %d is %f \n",w,h,m,*(conv + m*(Wout*Hout) + h*Wout + w) );
-//				conv[w][h][m]+=bias[1][1][1][m];
-			}
-		}
-	}
+				//temp=*(conv + m*(Wout*Hout) + h*Wout + w);
 
-	// adding Bias
-/*	std::cout << "Line 51 " << bias[0][0][0][0] << endl;
-    for(int m=0; m<M; m++){
-		for(int h=0; h<Hout; h++){
-			for(int w=0; w<Wout; w++){
-				*( conv + m*(Wout*Hout) + h*Wout + w)+=*(bias+m);
-				temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
-		//		temp1=conv[w][h][m];
-		//		tempAddr = &conv + m*(Wout*Hout) + h*Wout + w;
-			//	printf("conv at %d %d %d is %f \n",w,h,m,*(conv + m*(Wout*Hout) + h*Wout + w) );
 			}
 		}
 	}
-	*/
-	//std::cout << bias[0][0][0][0] << endl;
 }
 // Convolves weights and input feature maps for the given point in output Feature map
-data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m )
+/*data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m )
 {
 	data_t sum=0;
 	int i,j;
@@ -217,12 +188,7 @@ data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data
     }
 	return sum;
 }
-
-//
-//void conv_layer2(data_t (&conv)[Wout2][Wout2][OPFMapsCnt2], data_t (&image)[Win2][Win2][InpFMapCnt2], data_t (&convKernels2)[WKer2][WKer2][InpFMapCnt2][OPFMapsCnt2], data_t (&bias2)[0][0][0][OPFMapsCnt2]data_t CONV_KERNEL_LENGTH2, data_t CONV_STRIDE2, data_int M2, data_int Wout2, data_int Hout2, data_int Win2, data_int Hin2, data_int N2, data_int group2);
-//{
-//}
-//
+*/
 
 // relu
 void relu( data_t *relu, data_t *conv, data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS )

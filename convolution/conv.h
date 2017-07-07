@@ -63,7 +63,7 @@ void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
 //void conv_layer1(data_t (&conv)[Wout1][Wout1][CONV1_FMAPS], data_t (&image)[Win1][Win1][InpFMapCnt1], data_t (&convKernels)[WKer1][WKer1][InpFMapCnt1][OPFMapsCnt1],
 //		data_t (&bias)[0][0][0][OPFMapsCnt1], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE, data_int M, data_int Wout, data_int Hout, data_int Win, data_int Hin, data_int N, data_int group)
 
-data_t mult_acc(data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m );
+//data_t mult_acc(data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m );
 void relu( data_t *relu, data_t *conv, data_t CONV_FMAP_WIDTH, data_t CONV_FMAPS );
 void max_pool(data_t *pool, data_t *relu, data_t FMAP_WIDTH, data_t FMAPS, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE);
 void lrn(data_t *lrn, data_t *pool ,int localSize, float alpha, float beta, int k);
