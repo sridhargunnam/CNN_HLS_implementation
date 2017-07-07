@@ -51,9 +51,9 @@ int main()
 //	conv_layer1((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE);
 
 	//cout << biasData1[0][0][0][0] << endl;
- //   relu(relu1, conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
-  //  max_pool(pool1, relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
- //   lrn(lrn1, pool1 , 5, .0001, 0.75, 1);
+    relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+    max_pool((data_t *)pool1, (data_t *)relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1);
+    lrn((data_t *)lrn1, (data_t *)pool1 , 5, .0001, 0.75, 1);
     writeData();
 /*
 	for (int i = 0; i < 27; i++)
@@ -79,7 +79,7 @@ void writeData()
         puts( "File successfully deleted" );
 
     std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
-
+/*
     for (int m = 0; m < 96; m++)
         {
     	for (int h = 0; h < 55; h++)
@@ -87,7 +87,7 @@ void writeData()
     			for (int w = 0; w < 55; w++)
                 {
 
-    				output << *((data_t *)conv1 + m*(55*55) + h*55 + w)  << " ";  //  space after %f
+    				output << *((data_t *)relu1 + m*(55*55) + h*55 + w)  << " ";  //  space after %f
     				//temp1=conv1[w][h][m];
     				//	temp1Addr = &conv1 + m*(55*55) + j*55 + i;
     				//temp=*(conv + m*(Wout*Hout) + h*Wout + w) ;
@@ -97,7 +97,9 @@ void writeData()
             }
     	}
     output.close();
-   /* //////////////////////////////
+*/
+
+   //////////////////////////////
     for (int m = 0; m < 96; m++)
 	{
 	//    output << biasData1[0][0][0][m] << " ";
@@ -105,13 +107,14 @@ void writeData()
 		{
 			for (int j = 0; j < 27; j++)
             {
-                output << lrn1[j][i][m] << " "; //  space after %f   // matlab and c++ store array in different format. In matlab its coloumn wise, in c++ its row wise
+                //output << lrn1[j][i][m] << " "; //  space after %f   // matlab and c++ store array in different format. In matlab its coloumn wise, in c++ its row wise
+				output << *((data_t *)lrn1 + m*(27*27) + i*27 + j)  << " ";
             }
             output << "\n" ;
 		}
 	}
     output.close();
-    */
+
 }
 
 
