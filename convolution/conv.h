@@ -42,13 +42,19 @@ const data_int CONV2_FMAPS=256;
 const data_int MAX_POOL_KERNEL_SIZE2=3;
 const data_int MAX_POOL_STRIDE2=2;
 const data_int WKer2=5;
-const data_int Win2=27;
-const data_int Hin2=27;
+const data_int Win2=31;
+const data_int Hin2=31;
 const data_int Wout2=27;
 const data_int Hout2=27;
 const data_int N2=96; //InpFMapCnt2=3;
 const data_int M2=256; //OPFMapCnt2=96;
 const data_int group2=2;
+
+const data_int poolInSize1=55;
+const data_int poolOutSize1=27;
+
+const data_int poolInSize2=27;
+const data_int poolOutSize2=13;
 //data_t Conv2Kernel[256][48][5][5];
 
 /*
@@ -73,8 +79,8 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 //		data_t (&bias)[0][0][0][OPFMapsCnt1], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE, data_int M, data_int Wout, data_int Hout, data_int Win, data_int Hin, data_int N, data_int group)
 
 //data_t mult_acc(data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m );
-void relu( data_t *relu, data_t *conv, data_t CONV_FMAP_WIDTH, data_t CONV_FMAPS );
-void max_pool(data_t *pool, data_t *relu, data_t FMAP_WIDTH, data_t FMAPS, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE);
-void lrn(data_t *lrn, data_t *pool ,int localSize, float alpha, float beta, int k);
+void relu( data_t *relu, data_t *conv, data_int CONV_FMAP_WIDTH, data_int CONV_FMAPS );
+void max_pool(data_t *pool, data_t *relu, data_int FMAP_WIDTH, data_int FMAPS, data_int MAX_POOL_KERNEL_SIZE, data_int MAX_POOL_STRIDE, data_int poolInSize, data_int poolOutSize);
+void lrn(data_t *lrn, data_t *pool ,data_int localSize, float alpha, float beta, data_int k, data_int W, data_int H, data_int M);
 void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96], int w, int h, int mStart, int mEnd);
 void exponent(data_t expTempBeta, data_t temp, data_t beta);

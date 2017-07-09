@@ -147,12 +147,20 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
 								{
 									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+									temp = (*(image + n*Win*Hin + h*Win + w)) ;
+									temp = (*(image + n*Win*Hin + h*Win + w)) ;
+									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+									temp=sum;
+									temp=sum;
 								}
 								j=0;
 							}
 							i=0;
 						}
 					*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
+				//	if( m==0 && h==0 && w<2)
+				//	printf(" temp is %f \n", temp);
 				}
 			}
 		}
@@ -179,16 +187,25 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 							{
 								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
 								{
-									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2)));
+									temp = (*(image + n*Win*Hin + h*Win + w)) ;
+									temp = (*(image + n*Win*Hin + h*Win + w)) ;
+									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2))) ;
+									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2))) ;
+									temp = sum ;
+									temp = sum ;
+
 								}
 								j=0;
 							}
 							i=0;
 						}
+						temp = sum ;
+						temp = sum ;
 					*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
 					temp = *(conv + m*(Wout*Hout) + h*Wout + w);
-					if( m==0 && h==0 && w<2)
-					printf(" temp is %f \n", temp);
+					//if( m==0 && h==0 && w<2)
+					//printf(" temp is %f \n", temp);
 				}
 			}
 		}
@@ -210,12 +227,14 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 							{
 								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
 								{
-									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2)));
 								}
 								j=0;
 							}
 							i=0;
 						}
+						temp = sum ;
+						temp = sum ;
 					*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
 					temp = *(conv + m*(Wout*Hout) + h*Wout + w);
 				}
@@ -282,7 +301,7 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 */
 
 // relu
-void relu( data_t *relu, data_t *conv, data_t CONV1_FMAP_WIDTH, data_t CONV1_FMAPS )
+void relu( data_t *relu, data_t *conv, data_int CONV1_FMAP_WIDTH, data_int CONV1_FMAPS )
 {
 	data_t temp;
     for(int m=0; m<CONV1_FMAPS; m++)
@@ -291,7 +310,7 @@ void relu( data_t *relu, data_t *conv, data_t CONV1_FMAP_WIDTH, data_t CONV1_FMA
         {
             for(int h=0; h<CONV1_FMAP_WIDTH; h++)
             {
-            	*(relu + m*(55*55) + h*55 + w) = *( conv + m*(55*55) + h*55 + w)>0  ? *(conv + m*(55*55) + h*55 + w) : 0;
+            	*(relu + m*(CONV1_FMAP_WIDTH*CONV1_FMAP_WIDTH) + h*CONV1_FMAP_WIDTH + w) = *( conv + m*(CONV1_FMAP_WIDTH*CONV1_FMAP_WIDTH) + h*CONV1_FMAP_WIDTH + w)>0  ? *(conv + m*(CONV1_FMAP_WIDTH*CONV1_FMAP_WIDTH) + h*CONV1_FMAP_WIDTH + w) : 0;
             //    temp=relu[w][h][m];
             }
         }
@@ -299,7 +318,7 @@ void relu( data_t *relu, data_t *conv, data_t CONV1_FMAP_WIDTH, data_t CONV1_FMA
     }
 }
 // max pooling
-void max_pool(data_t *pool, data_t *relu, data_t CONV_FMAP_WIDTH, data_t CONV_FMAPs, data_t MAX_POOL_KERNEL_SIZE, data_t MAX_POOL_STRIDE)
+void max_pool(data_t *pool, data_t *relu, data_int CONV_FMAP_WIDTH, data_int CONV_FMAPs, data_int MAX_POOL_KERNEL_SIZE, data_int MAX_POOL_STRIDE, data_int poolInSize, data_int poolOutSize )
 {
     int  Wout, Hout, hStart, wStart;
     Wout = (CONV_FMAP_WIDTH-MAX_POOL_KERNEL_SIZE)/MAX_POOL_STRIDE + 1;
@@ -315,13 +334,13 @@ void max_pool(data_t *pool, data_t *relu, data_t CONV_FMAP_WIDTH, data_t CONV_FM
                 wStart = (w)*MAX_POOL_STRIDE;
            //     wEnd=wStart+MAX_POOL_KERNEL_SIZE;
                 //pool[w][h][m]=0;
-                *(pool + m*(27*27) + w*27 + h)=0;
+                *(pool + m*(poolOutSize*poolOutSize) + w*poolOutSize + h)=0;
                 for(int hk=hStart; hk<hStart+MAX_POOL_KERNEL_SIZE; hk++)     // hk, wk are pool kernel size
                 {
                     for(int wk=wStart; wk<wStart+MAX_POOL_KERNEL_SIZE; wk++)
                     {
                     //pool[w][h][m]=(pool[w][h][m]>relu[wk][hk][m])? pool[w][h][m] : relu[wk][hk][m];
-                    *(pool + m*(27*27) + w*27 + h)= (*(pool + m*(27*27) + w*27 + h)>*(relu + m*(55*55) + wk*55 + hk)) ? *(pool + m*(27*27) + w*27 + h) : *(relu + m*(55*55) + wk*55 + hk);
+                    *(pool + m*(poolOutSize*poolOutSize) + w*poolOutSize + h)= (*(pool + m*(poolOutSize*poolOutSize) + w*poolOutSize + h)>*(relu + m*(poolInSize*poolInSize) + wk*poolInSize + hk)) ? *(pool + m*(poolOutSize*poolOutSize) + w*poolOutSize + h) : *(relu + m*(poolInSize*poolInSize) + wk*poolInSize + hk);
                     }
                 }
             }
@@ -342,9 +361,9 @@ function [ lrn ] = lrn( pool, localSize, alpha, beta, k )
 %lrn_xy_i=pool_xy_i/(k+alpha/localSize*sum_i(pool_xy_i^2))^beta.
 %The padding pixels consist of zeros.
 */
-void lrn(data_t *lrn, data_t *pool, int localSize, float alpha, float beta, int k)
+void lrn(data_t *lrn, data_t *pool, data_int localSize, data_t alpha, data_t beta, data_int k, data_int W, data_int H, data_int M )
 {
-    int W=27, H=27, M=96;
+    //int W=27, H=27, M=96;
     // set lrn to zero
     for(int w=0; w<W; w++)
     {
@@ -353,7 +372,7 @@ void lrn(data_t *lrn, data_t *pool, int localSize, float alpha, float beta, int 
             for(int m=0; m<M; m++)
             {
              //   lrn[w][h][m]= 0;
-            	*(lrn + m*(27*27) + w*27 + h)=0;
+            	*(lrn + m*(W*H) + w*H + h)=0;
             	//pool[w][h][m]=0;
             	// *(pool + m*(27*27) + w*27 + h)=0;
             }
@@ -380,7 +399,7 @@ void lrn(data_t *lrn, data_t *pool, int localSize, float alpha, float beta, int 
                 for(int k1=mStart; k1<=mEnd; k1++)
                     {
                     //temp_sum2 += pool[w][h][k1]*pool[w][h][k1];
-                	temp_sum2 += (*(pool + k1*(27*27) + w*27 + h))*(*(pool + k1*(27*27) + w*27 + h)) ;
+                	temp_sum2 += (*(pool + k1*(W*H) + w*H + h))*(*(pool + k1*(W*H) + w*H + h)) ;
                     }
                 sum2=temp_sum2;
          //       std::cout << " sum2 = " << sum2 << "\n" ;
@@ -392,12 +411,13 @@ void lrn(data_t *lrn, data_t *pool, int localSize, float alpha, float beta, int 
                 //lrn[w][h][m] = pool[w][h][m] / ( exponent(( k + alpha/localSize*sum2 ) , beta));//(((k + (alpha/localSize*sum2))^beta)
           //      std::cout << " temp = pool[w][h][m] / (expTempBeta) " << pool[w][h][m] / (expTempBeta)<< "\n" ;
              //   lrn[w][h][m] = pool[w][h][m] / (expTempBeta) ;//(((k + (alpha/localSize*sum2))^beta)
-                *(lrn + m*(27*27) + w*27 + h)= (*(pool + m*(27*27) + w*27 + h)) / expTempBeta;
+                *(lrn + m*(W*H) + w*H + h)= (*(pool + m*(W*H) + w*H + h)) / expTempBeta;
             }
         }
     }
 }
 // sum of dot product of lru kernel
+/*
 void sum2_lrn_kernel(data_t sum2, data_t (&pool)[27][27][96],
                      int w, int h, int mStart, int mEnd)
 {
@@ -414,3 +434,4 @@ void exponent(data_t expTempBeta, data_t temp, data_t beta)
     expTempBeta=pow(temp,beta);
 }
 
+*/
