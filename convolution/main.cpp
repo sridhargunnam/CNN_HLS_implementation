@@ -48,14 +48,6 @@ data_t conv5[13][13][256];
 int main()
 {
  	readToArray();
-	/*for(int w=0; w<11; w++){
-		for(int h=0; h<11; h++)
-		{
-			std::cout << Conv1Kernel[1][2][w][h] << "	" ;
-		}
-		std::cout <<"\n";
-	}*/
-	float temp;
 	for(int w=0; w<55; w++){
 			for(int h=0; h<55; h++){
 				for(int m=0; m<96; m++){
@@ -64,7 +56,8 @@ int main()
 			}
 	}
 ///////////////////////////////////////////////////// stage 1 ////////////////////////////////////////////////////////////////////////////////////////////////
-	conv_layer((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE, Win1,  Hin1,  N1,  M1,  Wout1,  Hout1,  3);
+	//synthesize();
+	conv_layer((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE, Win1,  Hin1,  N1,  M1,  Wout1,  Hout1,  group1);
     relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
     max_pool((data_t *)pool1, (data_t *)relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1, poolInSize1, poolOutSize1);
     lrn((data_t *)lrn1, (data_t *)pool1 , 5, .0001, 0.75, 1, 27, 27, 96);
@@ -111,29 +104,8 @@ int main()
 	    	    	}
 	            }
 	    	}
-	//////////////// (*(image + n*Win*Hin + h*Win + w))
-	    /// testing
-	     Mps=384, Len=15, Wid=15;  //  conv3
-	    // int Mps=256, Len=15, Wid=15; // lrn2 padded
-
-	    for (int m = 0; m < Mps; m++)
-	        {
-	    	for (int h = 0; h < Len; h++)
-	    		{
-	    			for (int w = 0; w < Wid; w++)
-	                {
-
-	    				temp=*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w)  ;//  lrn2Padded[h][w][m]; //
-	    				temp=*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w)  ;
-	    				temp=*((data_t *)Conv3Kernel + m*(Len*Wid) + h*Wid + w)  ;
-	    				temp=*((data_t *)Conv3Kernel + m*(Len*Wid) + h*Wid + w)  ;
-
-	    	    	}
-
-	            }
-	    	}
 ////////////////////////////////////////////////////////stage 3 /////////////////////////////////////////////////////////////////////////////////////////////
-	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, CONV3_KERNEL_3_LENGTH, CONV3_STRIDE, Win3,  Hin3,  N3,  M3,  Wout3,  Hout3,  group3); //3, 1, 15,  15,  256,  384,  13,  13,  1);
+//	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, CONV3_KERNEL_3_LENGTH, CONV3_STRIDE, Win3,  Hin3,  N3,  M3,  Wout3,  Hout3,  group3); //3, 1, 15,  15,  256,  384,  13,  13,  1);
 	    /*
 	    // relu((data_t *)relu3, (data_t *)conv3, CONV3_FMAP_WIDTH, CONV3_FMAPS );
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,9 +131,9 @@ void writeData()
         puts( "File successfully deleted" );
 
     std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
-    int Mps=96, Len=55, Wid=55; // conv1
+  //  int Mps=96, Len=55, Wid=55; // conv1
   //    int Mps=256, Len=27, Wid=27; // lrn1
-    //    int Mps=256, Len=27, Wid=27; //conv2; relu2
+        int Mps=256, Len=27, Wid=27; //conv2; relu2
     //    int Mps=96, Len=31, Wid=31; //lrn1 padded;
    //  int Mps=256, Len=13, Wid=13; // norm2 lrn2, pool2,
   //  int Mps=384, Len=13, Wid=13;  //  conv3
@@ -174,7 +146,7 @@ void writeData()
     			for (int w = 0; w < Wid; w++)
                 {
 
-    				output <<  *((data_t *)conv1 + m*(Len*Wid) + h*Wid + w)  << " "; //  lrn2Padded[h][w][m]; //
+    				output <<  *((data_t *)conv2 + m*(Len*Wid) + h*Wid + w)  << " "; //  lrn2Padded[h][w][m]; //
     	    	}
     			    output << "\n" ;
             }

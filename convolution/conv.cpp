@@ -212,7 +212,8 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 		}
 		//////////////////////////////////////////////
 			// for M/2 + 1 to M feature maps
-		for(int w=0; w<Wout; w++){
+		for(int w=0; w<Wout; w++)
+		{
 			for(int h=0; h<Hout; h++){
 				wStart=w*CONV_STRIDE;
 				hStart=h*CONV_STRIDE;
@@ -241,105 +242,8 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 				}
 			}
 		}
-		//////////////////////////////////////////
-		}
-	else if(group==3)
-		{
-		// for 0 to M/2 feature maps
-		int wStart, hStart;
-		for(int w=0; w<Wout; w++){
-			for(int h=0; h<Hout; h++){
-				wStart=w*CONV_STRIDE;
-				hStart=h*CONV_STRIDE;
-				// Now for each of the output feature map ( total o/p feature maps=M)
-				for(int m=0; m < data_int(M); m++){
-						data_t sum=0;
-						int i,j;
-						for(int n=0;n< data_int(N) ;n++)
-						{
-							i=0;j=0;
-							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-							for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
-							{
-								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
-								{
-									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N)));
-								}
-								j=0;
-							}
-							i=0;
-						}
-						temp = sum ;
-						temp = sum ;
-					*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
-					temp = *(conv + m*(Wout*Hout) + h*Wout + w);
-					//if( m==0 && h==0 && w<2)
-					//printf(" temp is %f \n", temp);
-				}
-			}
-		}
-
-
-		}
-
-
-	/*	for(int w=0; w<Wout; w++){
-		for(int h=0; h<Hout; h++){
-			wStart=w*CONV_STRIDE;
-			hStart=h*CONV_STRIDE;
-			// Now for each of the output feature map ( total o/p feature maps=M)
-			for(int m=0; m<M; m++){
-					data_t sum=0;
-					int i,j;
-					for(int n=0;n<N;n++)
-				    {
-				        i=0;j=0;
-				        // interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-				        for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
-				        {
-				            for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
-				            {
-				                sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
-				            }
-				            j=0;
-				        }
-				        i=0;
-				    }
-				*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
-			}
-		}
 	}
-	*/
 }
-// Convolves weights and input feature maps for the given point in output Feature map
-/*data_t mult_acc (data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m )
-{
-	data_t sum=0;
-	int i,j;
-	for(int n=0;n<3;n++)
-    {
-        i=0;j=0;
-        // interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-        for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
-        {
-            for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
-            {
-//                printf("conv kernel at w=%d h=%d i/p map=%d = %f, input image=%f \n",w,h,n,convKernels[i][j][n][m],image[w][h][n]);
-                sum += image[h][w][n]*convKernels[i][j][n][m];
-                //j=j+1;
-            }
-            j=0;
-            //i=i+1;
- //       printf("element of O/P FM at = %f \n",sum);
-        }
-        i=0;
-//        printf("element of O/P FM at = %d \n",sum);
-
-    }
-	return sum;
-}
-*/
-
 // relu
 void relu( data_t *relu, data_t *conv, data_int CONV1_FMAP_WIDTH, data_int CONV1_FMAPS )
 {
