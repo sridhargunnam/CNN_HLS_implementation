@@ -47,7 +47,7 @@ data_t conv5[13][13][256];
 
 int main()
 {
-	readToArray();
+ 	readToArray();
 	/*for(int w=0; w<11; w++){
 		for(int h=0; h<11; h++)
 		{
@@ -63,13 +63,13 @@ int main()
 				}
 			}
 	}
-	///
-	conv_layer((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE, Win1,  Hin1,  N1,  M1,  Wout1,  Hout1,  group1);
+///////////////////////////////////////////////////// stage 1 ////////////////////////////////////////////////////////////////////////////////////////////////
+	conv_layer((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE, Win1,  Hin1,  N1,  M1,  Wout1,  Hout1,  3);
     relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
     max_pool((data_t *)pool1, (data_t *)relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1, poolInSize1, poolOutSize1);
     lrn((data_t *)lrn1, (data_t *)pool1 , 5, .0001, 0.75, 1, 27, 27, 96);
     /////////// padding lrn1 before conv2 operation
-   int  Mps=96, Len=31, Wid=31; //lrn1 padded;
+    int  Mps=96, Len=31, Wid=31; //lrn1 padded;
     int pad = 2;
     for (int m = 0; m < Mps; m++)
         {
@@ -77,24 +77,29 @@ int main()
     		{
     			for (int w = pad; w < Wid-pad; w++)
                 {
-    				//temp= *((data_t *)lrn1Padded + m*(Len*Wid) + h*Wid + w);
-    				//temp= *((data_t *)lrn1Padded + m*(Len*Wid) + h*Wid + w);
     				 *((data_t *)lrn1Padded + m*(Len*Wid) + h*Wid + w) = *((data_t *)lrn1 + m*((Len-2*pad)*(Wid-2*pad)) + (h-pad)*(Wid-2*pad) + (w-pad));
-    				// temp= *((data_t *)lrn1 + m*((Len-pad)*(Wid-pad)) + h*(Wid-pad) + w);
-    				// temp= *((data_t *)lrn1 + m*((Len-pad)*(Wid-pad)) + h*(Wid-pad) + w);
-
     	    	}
             }
     	}
-	//////////
+    //////////////////////////////////////////////////// stage 2 /////////////////////////////////////////////////////////////////////////////////////////////////
     conv_layer((data_t *)conv2, (data_t *)lrn1Padded, (data_t *)Conv2Kernel, (data_t *)biasData2, CONV2_KERNEL_2_LENGTH, CONV2_STRIDE, Win2,  Hin2,  N2,  M2,  Wout2,  Hout2,  group2);
 	relu((data_t *)relu2, (data_t *)conv2, CONV2_FMAP_WIDTH, CONV2_FMAPS );
 	max_pool((data_t *)pool2, (data_t *)relu2, CONV2_FMAP_WIDTH, CONV2_FMAPS,MAX_POOL_KERNEL_SIZE2, MAX_POOL_STRIDE2, poolInSize2, poolOutSize2);
 	lrn((data_t *)lrn2, (data_t *)pool2 , 5, .0001, 0.75, 1, 13, 13, 256);
-	///
 	///////////// padding lrn 3
 	     Mps=256, Len=15, Wid=15;
-	     pad = 1;
+		    for (int m = 0; m < Mps; m++)
+		        {
+		    	for (int h = 0; h < Len; h++)
+		    		{
+		    			for (int w = 0; w < Wid; w++)
+		                {
+		    				 *((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) = 0;
+		    				//*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) = m*(Len*Wid) + h*Wid + w;
+		    	    	}
+		            }
+		    	}
+	    pad = 1;
 	    for (int m = 0; m < Mps; m++)
 	        {
 	    	for (int h = pad; h < Len-pad; h++)
@@ -102,20 +107,43 @@ int main()
 	    			for (int w = pad; w < Wid-pad; w++)
 	                {
 	    				 *((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) = *((data_t *)lrn2 + m*((Len-2*pad)*(Wid-2*pad)) + (h-pad)*(Wid-2*pad) + (w-pad));
+	    				 //*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) ;
 	    	    	}
 	            }
 	    	}
-	////////////////
+	//////////////// (*(image + n*Win*Hin + h*Win + w))
+	    /// testing
+	     Mps=384, Len=15, Wid=15;  //  conv3
+	    // int Mps=256, Len=15, Wid=15; // lrn2 padded
 
-	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, 3, 1, 15,  15,  256,  384,  13,  13,  1);
-/*		relu((data_t *)relu3, (data_t *)conv3, CONV3_FMAP_WIDTH, CONV3_FMAPS );
+	    for (int m = 0; m < Mps; m++)
+	        {
+	    	for (int h = 0; h < Len; h++)
+	    		{
+	    			for (int w = 0; w < Wid; w++)
+	                {
 
+	    				temp=*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w)  ;//  lrn2Padded[h][w][m]; //
+	    				temp=*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w)  ;
+	    				temp=*((data_t *)Conv3Kernel + m*(Len*Wid) + h*Wid + w)  ;
+	    				temp=*((data_t *)Conv3Kernel + m*(Len*Wid) + h*Wid + w)  ;
+
+	    	    	}
+
+	            }
+	    	}
+////////////////////////////////////////////////////////stage 3 /////////////////////////////////////////////////////////////////////////////////////////////
+	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, CONV3_KERNEL_3_LENGTH, CONV3_STRIDE, Win3,  Hin3,  N3,  M3,  Wout3,  Hout3,  group3); //3, 1, 15,  15,  256,  384,  13,  13,  1);
+	    /*
+	    // relu((data_t *)relu3, (data_t *)conv3, CONV3_FMAP_WIDTH, CONV3_FMAPS );
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	    conv_layer((data_t *)conv4, (data_t *)relu3, (data_t *)Conv4Kernel, (data_t *)biasData4, CONV4_KERNEL_4_LENGTH, CONV4_STRIDE, Win4,  Hin4,  N4,  M4,  Wout4,  Hout4,  group4);
 		relu((data_t *)relu4, (data_t *)conv4, CONV4_FMAP_WIDTH, CONV4_FMAPS );
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	    conv_layer((data_t *)conv5, (data_t *)relu4, (data_t *)Conv5Kernel, (data_t *)biasData5, CONV5_KERNEL_5_LENGTH, CONV5_STRIDE, Win5,  Hin5,  N5,  M5,  Wout5,  Hout5,  group5);
 		relu((data_t *)relu5, (data_t *)conv5, CONV5_FMAP_WIDTH, CONV5_FMAPS );
-*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	     */
     writeData();
     printf("********************END***********************");
 return 0;
@@ -131,13 +159,13 @@ void writeData()
         puts( "File successfully deleted" );
 
     std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
-   // int Mps=96, Len=55, Wid=55; // conv1
+    int Mps=96, Len=55, Wid=55; // conv1
   //    int Mps=256, Len=27, Wid=27; // lrn1
     //    int Mps=256, Len=27, Wid=27; //conv2; relu2
     //    int Mps=96, Len=31, Wid=31; //lrn1 padded;
-    //  int Mps=256, Len=13, Wid=13; // norm2 lrn2, pool2,
-   // int Mps=384, Len=13, Wid=13;  //  conv3
-      int Mps=256, Len=15, Wid=15; // lrn2 padded
+   //  int Mps=256, Len=13, Wid=13; // norm2 lrn2, pool2,
+  //  int Mps=384, Len=13, Wid=13;  //  conv3
+    // int Mps=256, Len=15, Wid=15; // lrn2 padded
 
     for (int m = 0; m < Mps; m++)
         {
@@ -146,7 +174,7 @@ void writeData()
     			for (int w = 0; w < Wid; w++)
                 {
 
-    				output << *((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w)  << " ";
+    				output <<  *((data_t *)conv1 + m*(Len*Wid) + h*Wid + w)  << " "; //  lrn2Padded[h][w][m]; //
     	    	}
     			    output << "\n" ;
             }
@@ -264,7 +292,7 @@ void readToArray()
 								std::string valk2;
 								std::getline(issk2, valk2, ',');
 								std::stringstream convertork2(valk2);
-								convertork2 >> Conv2Kernel[(row/ROW_MAX)%fmaps][row/(fmaps*ROW_MAX)][row%(COL_MAX)][col] ;;//[row/(ROW_MAX*COL_MAX*inpfmaps)][row/(ROW_MAX*COL_MAX)][row%(ROW_MAX)][col];
+								convertork2 >> Conv2Kernel[(row/ROW_MAX)%fmaps][row/(fmaps*ROW_MAX)][row%(COL_MAX)][col] ;//[row/(ROW_MAX*COL_MAX*inpfmaps)][row/(ROW_MAX*COL_MAX)][row%(ROW_MAX)][col];
 
 							}
 						}

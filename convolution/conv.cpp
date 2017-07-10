@@ -142,18 +142,19 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 						{
 							i=0;j=0;
 							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-							for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
+							for(int h1=hStart; h1<hStart+CONV_KERNEL_LENGTH; h1++,i++)
 							{
-								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
-								{
-									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
-									temp = (*(image + n*Win*Hin + h*Win + w)) ;
-									temp = (*(image + n*Win*Hin + h*Win + w)) ;
-									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
-									temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
-									temp=sum;
-									temp=sum;
-								}
+															for(int w1=wStart; w1<wStart+CONV_KERNEL_LENGTH; w1++,j++)
+															{
+																sum += (*(image + n*Win*Hin + h1*Win + w1)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+																temp = (*(image + n*Win*Hin + h1*Win + w1)) ;
+																temp = (*(image + n*Win*Hin + h1*Win + w1)) ;
+																temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+																temp = (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*N));
+																temp=sum;
+																temp=sum;
+
+															}
 								j=0;
 							}
 							i=0;
@@ -242,6 +243,45 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 		}
 		//////////////////////////////////////////
 		}
+	else if(group==3)
+		{
+		// for 0 to M/2 feature maps
+		int wStart, hStart;
+		for(int w=0; w<Wout; w++){
+			for(int h=0; h<Hout; h++){
+				wStart=w*CONV_STRIDE;
+				hStart=h*CONV_STRIDE;
+				// Now for each of the output feature map ( total o/p feature maps=M)
+				for(int m=0; m < data_int(M); m++){
+						data_t sum=0;
+						int i,j;
+						for(int n=0;n< data_int(N) ;n++)
+						{
+							i=0;j=0;
+							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
+							for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
+							{
+								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
+								{
+									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N)));
+								}
+								j=0;
+							}
+							i=0;
+						}
+						temp = sum ;
+						temp = sum ;
+					*(conv + m*(Wout*Hout) + h*Wout + w)=sum + *(bias+m);
+					temp = *(conv + m*(Wout*Hout) + h*Wout + w);
+					//if( m==0 && h==0 && w<2)
+					//printf(" temp is %f \n", temp);
+				}
+			}
+		}
+
+
+		}
+
 
 	/*	for(int w=0; w<Wout; w++){
 		for(int h=0; h<Hout; h++){

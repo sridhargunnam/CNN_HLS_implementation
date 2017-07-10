@@ -56,6 +56,22 @@ const data_int poolOutSize1=27;
 const data_int poolInSize2=27;
 const data_int poolOutSize2=13;
 //data_t Conv2Kernel[256][48][5][5];
+const data_int CONV3_KERNEL_3_LENGTH=3;
+const data_int CONV3_STRIDE=1;
+const data_int CONV3_PAD=1;
+const data_int CONV3_GROUP=1;
+const data_int CONV3_FMAP_WIDTH=13;
+const data_int CONV3_FMAPS=384;
+const data_int WKer3=3;
+const data_int Win3=15;
+const data_int Hin3=15;
+const data_int Wout3=13;
+const data_int Hout3=13;
+const data_int N3=256;
+const data_int M3=384;
+const data_int group3=3;
+
+// conv3 layer parameters
 
 /*
 const unsigned CONV1_STRIDE=4;
