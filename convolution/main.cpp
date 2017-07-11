@@ -34,9 +34,9 @@ data_t conv2[27][27][256];
 data_t relu2[27][27][256];
 data_t pool2[27][27][256];
 data_t lrn2[13][13][256];
-data_t Conv3Kernel[384][256][5][5];
-data_t Conv4Kernel[384][192][5][5];
-data_t Conv5Kernel[256][192][5][5];
+data_t Conv3Kernel[384][256][3][3];
+data_t Conv4Kernel[384][192][3][3];
+data_t Conv5Kernel[256][192][3][3];
 data_t biasData2[1][1][1][256];
 data_t biasData3[1][1][1][384];
 data_t biasData4[1][1][1][384];
@@ -44,7 +44,14 @@ data_t biasData5[1][1][1][256];
 data_t conv3[13][13][384];
 data_t conv4[13][13][384];
 data_t conv5[13][13][256];
+data_t relu3[13][13][384];// 13, 13, 384
+data_t relu3Padded[15][15][384];
+data_t relu4[13][13][384];// 13, 13, 384
+data_t relu4Padded[15][15][384];
+data_t relu5[13][13][256];
+data_t pool5[6][6][256];
 
+// 	int sizeKer[5][4] = {conv1{11, 11, 3, 96}, conv2{5, 5, 48, 256},conv3{3,3,256,384},conv4{3,3,192,384}, conv5{3,3,192,256}} ;
 int main()
 {
  	readToArray();
@@ -105,17 +112,64 @@ int main()
 	            }
 	    	}
 ////////////////////////////////////////////////////////stage 3 /////////////////////////////////////////////////////////////////////////////////////////////
-//	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, CONV3_KERNEL_3_LENGTH, CONV3_STRIDE, Win3,  Hin3,  N3,  M3,  Wout3,  Hout3,  group3); //3, 1, 15,  15,  256,  384,  13,  13,  1);
-	    /*
-	    // relu((data_t *)relu3, (data_t *)conv3, CONV3_FMAP_WIDTH, CONV3_FMAPS );
+	    conv_layer((data_t *)conv3, (data_t *)lrn2Padded, (data_t *)Conv3Kernel, (data_t *)biasData3, CONV3_KERNEL_3_LENGTH, CONV3_STRIDE, Win3,  Hin3,  N3,  M3,  Wout3,  Hout3,  group3); //3, 1, 15,  15,  256,  384,  13,  13,  1);
+	    relu((data_t *)relu3, (data_t *)conv3, CONV3_FMAP_WIDTH, CONV3_FMAPS );
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	    conv_layer((data_t *)conv4, (data_t *)relu3, (data_t *)Conv4Kernel, (data_t *)biasData4, CONV4_KERNEL_4_LENGTH, CONV4_STRIDE, Win4,  Hin4,  N4,  M4,  Wout4,  Hout4,  group4);
+	     Mps=384, Len=15, Wid=15;
+		    for (int m = 0; m < Mps; m++)
+		        {
+		    	for (int h = 0; h < Len; h++)
+		    		{
+		    			for (int w = 0; w < Wid; w++)
+		                {
+		    				 *((data_t *)relu3Padded + m*(Len*Wid) + h*Wid + w) = 0;
+		    				//*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) = m*(Len*Wid) + h*Wid + w;
+		    	    	}
+		            }
+		    	}
+	    pad = 1;
+	    for (int m = 0; m < Mps; m++)
+	        {
+	    	for (int h = pad; h < Len-pad; h++)
+	    		{
+	    			for (int w = pad; w < Wid-pad; w++)
+	                {
+	    				 *((data_t *)relu3Padded + m*(Len*Wid) + h*Wid + w) = *((data_t *)relu3 + m*((Len-2*pad)*(Wid-2*pad)) + (h-pad)*(Wid-2*pad) + (w-pad));
+	    				 //*((data_t *)lrn2Padded + m*(Len*Wid) + h*Wid + w) ;
+	    	    	}
+	            }
+	    	}
+	   conv_layer((data_t *)conv4, (data_t *)relu3Padded, (data_t *)Conv4Kernel, (data_t *)biasData4, CONV4_KERNEL_4_LENGTH, CONV4_STRIDE, Win4,  Hin4,  N4,  M4,  Wout4,  Hout4,  group4);
 		relu((data_t *)relu4, (data_t *)conv4, CONV4_FMAP_WIDTH, CONV4_FMAPS );
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	    conv_layer((data_t *)conv5, (data_t *)relu4, (data_t *)Conv5Kernel, (data_t *)biasData5, CONV5_KERNEL_5_LENGTH, CONV5_STRIDE, Win5,  Hin5,  N5,  M5,  Wout5,  Hout5,  group5);
-		relu((data_t *)relu5, (data_t *)conv5, CONV5_FMAP_WIDTH, CONV5_FMAPS );
+	     Mps=384, Len=15, Wid=15;
+		    for (int m = 0; m < Mps; m++)
+		        {
+		    	for (int h = 0; h < Len; h++)
+		    		{
+		    			for (int w = 0; w < Wid; w++)
+		                {
+		    				 *((data_t *)relu4Padded + m*(Len*Wid) + h*Wid + w) = 0;
+		    	    	}
+		            }
+		    	}
+	    pad = 1;
+	    for (int m = 0; m < Mps; m++)
+	        {
+	    	for (int h = pad; h < Len-pad; h++)
+	    		{
+	    			for (int w = pad; w < Wid-pad; w++)
+	                {
+	    				 *((data_t *)relu4Padded + m*(Len*Wid) + h*Wid + w) = *((data_t *)relu4 + m*((Len-2*pad)*(Wid-2*pad)) + (h-pad)*(Wid-2*pad) + (w-pad));
+	    	    	}
+	            }
+	    	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	     */
+    conv_layer((data_t *)conv5, (data_t *)relu4Padded, (data_t *)Conv5Kernel, (data_t *)biasData5, CONV5_KERNEL_5_LENGTH, CONV5_STRIDE, Win5,  Hin5,  N5,  M5,  Wout5,  Hout5,  group5);
+	relu((data_t *)relu5, (data_t *)conv5, CONV5_FMAP_WIDTH, CONV5_FMAPS );
+	max_pool((data_t *)pool5, (data_t *)relu5, CONV5_FMAP_WIDTH, CONV5_FMAPS,MAX_POOL_KERNEL_SIZE5, MAX_POOL_STRIDE5, poolInSize5, poolOutSize5);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     writeData();
     printf("********************END***********************");
 return 0;
@@ -131,13 +185,15 @@ void writeData()
         puts( "File successfully deleted" );
 
     std::ofstream output("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Output.txt");
-  //  int Mps=96, Len=55, Wid=55; // conv1
-  //    int Mps=256, Len=27, Wid=27; // lrn1
-        int Mps=256, Len=27, Wid=27; //conv2; relu2
+//    int Mps=96, Len=55, Wid=55; // conv1
+  //  int Mps=96, Len=27, Wid=27; //pool1
+   //   int Mps=256, Len=27, Wid=27; // lrn1
+//       int Mps=256, Len=27, Wid=27; //conv2; relu2
     //    int Mps=96, Len=31, Wid=31; //lrn1 padded;
    //  int Mps=256, Len=13, Wid=13; // norm2 lrn2, pool2,
-  //  int Mps=384, Len=13, Wid=13;  //  conv3
+   // int Mps=256, Len=13, Wid=13;  //  conv3
     // int Mps=256, Len=15, Wid=15; // lrn2 padded
+     int Mps=256, Len=6, Wid=6;	// pool5
 
     for (int m = 0; m < Mps; m++)
         {
@@ -145,30 +201,13 @@ void writeData()
     		{
     			for (int w = 0; w < Wid; w++)
                 {
-
-    				output <<  *((data_t *)conv2 + m*(Len*Wid) + h*Wid + w)  << " "; //  lrn2Padded[h][w][m]; //
+    				output <<  *((data_t *)pool5 + m*(Len*Wid) + h*Wid + w)  << " "; //  lrn2Padded[h][w][m]; //
     	    	}
     			    output << "\n" ;
             }
     	}
     output.close();
    //////////////////////////////
-/*
-     for (int m = 0; m < 96; m++)
-	{
-	//    output << biasData1[0][0][0][m] << " ";
-		for (int i = 0; i < 27; i++)
-		{
-			for (int j = 0; j < 27; j++)
-            {
-                //output << lrn1[j][i][m] << " "; //  space after %f   // matlab and c++ store array in different format. In matlab its coloumn wise, in c++ its row wise
-				output << *((data_t *)lrn1 + m*(27*27) + i*27 + j)  << " ";
-            }
-            output << "\n" ;
-		}
-	}
-    output.close();
-*/
 }
 
 
@@ -187,31 +226,6 @@ std::string IntToString ( int number )
 /// read data
 void readToArray()
 {	// reading kernel weights
-
-/*	//int sizeKer[5][4] = { {11 11 3 96}, { 5     5    48   256}, { 3     3   256   384}, {3     3   192   384}, {3     3   192   256}} ;
-	std::ifstream file("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\conv1KernelWeights.dat");
-	//std::ifstream file("/home/gunman/Downloads/summer17/alexnet/conv1KernelWeights.dat");
-    int dim=3; // 3 dimensions, one for each RGB
-   // int tempa;
-	for (int row = 0; row < 11*dim; ++row)
-	{
-		std::string line;
-		std::getline(file, line);
-		if (!file.good())
-			break;
-		std::stringstream iss(line);
-		for (int col = 0; col < 1056; ++col)
-		{
-			std::string val;
-			std::getline(iss, val, ',');
-
-			std::stringstream convertor(val);
-			convertor >> data[row][col];
-			//tempa=data[row][col];
-		}
-	}
-	file.close();
-*/
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	int sizeKer[5][4] = {{11, 11, 3, 96}, {5, 5, 48, 256},{3,3,256,384},{3,3,192,384}, {3,3,192,256}} ;
@@ -343,7 +357,6 @@ void readToArray()
 
 	}
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// reading bias
 	//std::ifstream file1("/home/gunman/Downloads/summer17/alexnet/git/CNN_HLS_implementation/convolution/data/conv1BiasV2.dat");
@@ -442,36 +455,6 @@ void readToArray()
 // Restructures array to make to easily usable with indexing
 // we need weights in array of size 11 X 11 X 3 X 96 from 33 X 1056 format
 
-	/*
-for(int m=0; m<96; m++){
-	for (int dim = 0; dim < 3; dim++)
-	{
-		for (int i = 0; i < 11; i++)
-		{
-			for (int j = 0; j < 11; j++)
-			{
-				Conv1Kernel[m][dim][i][j] = data[i+(11*dim)][j+(11*m)];
-			//	printf("element of array at = %f \n",Conv1Kernel[i][j][dim][m]);
-			}
-		}
-	}
-//	printf("element of array at = %f \n",Conv1Kernel[0][0][2][m]);
-	}
-
-	*/
-/*// making a dummy image all ones
-	for (int k = 0; k < 3; k++)
-	{
-		for (int i = 0; i < 227; i++)
-		{
-			for (int j = 0; j < 227; j++)
-            {
-                image[i][j][k]=1;
-     //           printf("element of O/P FM at = %f \n",image[i][j][k]);
-            }
-		}
-	}
-*/
 //////////////////////////////
 std::ifstream file3("D:\\sridhar\\workdir\\CNN_HLS_implementation\\convolution\\data\\Image1.dat");
     int dim3=3; // 3 dimensions, one for each RGB

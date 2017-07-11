@@ -69,32 +69,42 @@ const data_int Wout3=13;
 const data_int Hout3=13;
 const data_int N3=256;
 const data_int M3=384;
-const data_int group3=3;
+const data_int group3=1;
 
-// conv3 layer parameters
+// conv4 layer parameters
+const data_t CONV4_FMAP_WIDTH=13;
+const data_t CONV4_FMAPS=384;
+const data_t CONV4_KERNEL_4_LENGTH=3;
+const data_t CONV4_STRIDE=1;
+const data_t Win4=15;
+const data_t Hin4=15;
+const data_t N4=384;
+const data_t M4=384;
+const data_t Wout4=13;
+const data_t Hout4=13;
+const data_t group4=2;
+// conv5 layers parameters
+const data_t CONV5_FMAP_WIDTH=13;
+const data_t CONV5_FMAPS=256;
+const data_t CONV5_KERNEL_5_LENGTH=3;
+const data_t CONV5_STRIDE=1;
+const data_t Win5=15;
+const data_t Hin5=15;
+const data_t N5=384;
+const data_t M5=256;
+const data_t Wout5=13;
+const data_t Hout5=13;
+const data_t group5=2;
 
-/*
-const unsigned CONV1_STRIDE=4;
-const unsigned CONV1_PAD=0;
-const unsigned CONV1_GROUP=1;
-
-const unsigned CONV1_FMAPS=96;
-const unsigned MAX_POOL_KERNEL_SIZE1=3;
-const unsigned MAX_POOL_STRIDE1=2;
-*/
-//void conv(data_t (&a)[11][11], data_t (&b)[11][11], data_t *c);
+/// pool5
+const data_int MAX_POOL_KERNEL_SIZE5=3;
+const data_int MAX_POOL_STRIDE5=2;
+const data_int poolInSize5=13;
+const data_int poolOutSize5=6;
 
 void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 		data_t *bias, data_int CONV_KERNEL_LENGTH, data_int CONV_STRIDE,
 		data_int Win, data_int Hin, data_int N, data_int M, data_int Wout, data_int Hout, data_int group);// data_t CONV1_STRIDE, data_t CONV1_PAD, data_t CONV1_GROUP );
-//void conv_layer1(data_t *conv, data_t *image, data_t *convKernels,
-//		data_t *bias, data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE);// data_t CONV1_STRIDE, data_t CONV1_PAD, data_t CONV1_GROUP );
-//void conv_layer2(data_t (&conv2x)[Wout2][Wout2][OPFMapsCnt2], data_t (&imagex)[Win2][Win2][InpFMapCnt2], data_t (&convKernels2x)[WKer2][WKer2][InpFMapCnt2][OPFMapsCnt2], data_t (&bias2)[0][0][0][OPFMapsCnt2]data_t CONV_KERNEL_LENGTH2, data_t CONV_STRIDE2, data_int M2, data_int Wout2, data_int Hout2, data_int Win2, data_int Hin2, data_int N2, data_int group2);
-
-//void conv_layer1(data_t (&conv)[Wout1][Wout1][CONV1_FMAPS], data_t (&image)[Win1][Win1][InpFMapCnt1], data_t (&convKernels)[WKer1][WKer1][InpFMapCnt1][OPFMapsCnt1],
-//		data_t (&bias)[0][0][0][OPFMapsCnt1], data_t CONV_KERNEL_LENGTH, data_t CONV_STRIDE, data_int M, data_int Wout, data_int Hout, data_int Win, data_int Hin, data_int N, data_int group)
-
-//data_t mult_acc(data_t (&image)[227][227][3],data_t wStart, data_t hStart, data_t CONV_KERNEL_LENGTH, data_t (&convKernels)[11][11][3][96], int m );
 void relu( data_t *relu, data_t *conv, data_int CONV_FMAP_WIDTH, data_int CONV_FMAPS );
 void max_pool(data_t *pool, data_t *relu, data_int FMAP_WIDTH, data_int FMAPS, data_int MAX_POOL_KERNEL_SIZE, data_int MAX_POOL_STRIDE, data_int poolInSize, data_int poolOutSize);
 void lrn(data_t *lrn, data_t *pool ,data_int localSize, float alpha, float beta, data_int k, data_int W, data_int H, data_int M);
