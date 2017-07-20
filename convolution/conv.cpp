@@ -17,9 +17,9 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 	//   Win=227; Hin=227;
     // Padding required for conv layers other than 1st conv layer.
 
-	for(int w=0; w<Wout; w++){
-		for(int h=0; h<Hout; h++){
-			for(int m=0; m<M; m++){
+	conv_layer_label8:for(int w=0; w<Wout; w++){
+		conv_layer_label7:for(int h=0; h<Hout; h++){
+			conv_layer_label6:for(int m=0; m<M; m++){
 				*( conv + m*(Wout*Hout) + h*Wout + w)=0;
 			}
 		}
@@ -30,15 +30,15 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 	if(group==1)
 	{
 		int wStart, hStart;
-		for(int w=0; w<Wout; w++){
-			for(int h=0; h<Hout; h++){
+		conv_layer_label12:for(int w=0; w<Wout; w++){
+			conv_layer_label11:for(int h=0; h<Hout; h++){
 				wStart=w*CONV_STRIDE;
 				hStart=h*CONV_STRIDE;
 				// Now for each of the output feature map ( total o/p feature maps=M)
-				for(int m=0; m<M; m++){
+				conv_layer_label10:for(int m=0; m<M; m++){
 						data_t sum=0;
 						int i,j;
-						for(int n=0;n<N;n++)
+						conv_layer_label9:for(int n=0;n<N;n++)
 						{
 							i=0;j=0;
 							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
@@ -76,9 +76,9 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 						{
 							i=0;j=0;
 							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-							for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
+							conv_layer_label2:for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
 							{
-								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
+								conv_layer_label3:for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
 								{
 									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + n*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2)));
 								}
@@ -106,9 +106,9 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 						{
 							i=0;j=0;
 							// interchanging hStart wStart loops should give same result, take care of i,j incrementing accordingly
-							for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
+							conv_layer_label4:for(int h=hStart; h<hStart+CONV_KERNEL_LENGTH; h++,i++)
 							{
-								for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
+								conv_layer_label5:for(int w=wStart; w<wStart+CONV_KERNEL_LENGTH; w++,j++)
 								{
 									sum += (*(image + n*Win*Hin + h*Win + w)) *  (*(convKernels + i*CONV_KERNEL_LENGTH + j + (n-(data_int(N/2)))*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH + m*CONV_KERNEL_LENGTH*CONV_KERNEL_LENGTH*data_int(N/2)));
 								}
@@ -121,6 +121,7 @@ void conv_layer(data_t *conv, data_t *image, data_t *convKernels,
 			}
 		}
 	}
+
 }
 // relu
 void relu( data_t *relu, data_t *conv, data_int CONV_FMAP_WIDTH, data_int CONV_FMAPS )

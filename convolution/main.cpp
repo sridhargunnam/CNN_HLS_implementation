@@ -65,7 +65,7 @@ int main()
 ///////////////////////////////////////////////////// stage 1 ////////////////////////////////////////////////////////////////////////////////////////////////
 	//synthesize();
 	conv_layer((data_t *)conv1, (data_t *)image, (data_t *)Conv1Kernel, (data_t *)biasData1, CONV1_KERNEL_1_LENGTH, CONV1_STRIDE, Win1,  Hin1,  N1,  M1,  Wout1,  Hout1,  group1);
-    relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
+   /* relu((data_t *)relu1, (data_t *)conv1, CONV1_FMAP_WIDTH, CONV1_FMAPS );
     max_pool((data_t *)pool1, (data_t *)relu1, CONV1_FMAP_WIDTH, CONV1_FMAPS,MAX_POOL_KERNEL_SIZE1, MAX_POOL_STRIDE1, poolInSize1, poolOutSize1);
     lrn((data_t *)lrn1, (data_t *)pool1 , 5, .0001, 0.75, 1, 27, 27, 96);
     /////////// padding lrn1 before conv2 operation
@@ -168,7 +168,7 @@ int main()
     conv_layer((data_t *)conv5, (data_t *)relu4Padded, (data_t *)Conv5Kernel, (data_t *)biasData5, CONV5_KERNEL_5_LENGTH, CONV5_STRIDE, Win5,  Hin5,  N5,  M5,  Wout5,  Hout5,  group5);
 	relu((data_t *)relu5, (data_t *)conv5, CONV5_FMAP_WIDTH, CONV5_FMAPS );
 	max_pool((data_t *)pool5, (data_t *)relu5, CONV5_FMAP_WIDTH, CONV5_FMAPS,MAX_POOL_KERNEL_SIZE5, MAX_POOL_STRIDE5, poolInSize5, poolOutSize5);
-
+*/
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     writeData();
     printf("********************END***********************");
